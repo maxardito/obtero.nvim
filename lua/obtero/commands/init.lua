@@ -5,7 +5,7 @@ M.registered = {}
 
 --- Register a new command
 ---@param name string
----@param config { opts: table, func: function }
+---@param config { picker: table, opts: table, func: function }
 M.register = function(name, config)
   M.registered[name] = config
 end

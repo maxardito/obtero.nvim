@@ -6,7 +6,7 @@ local obsidian = require("obsidian")
 -- Obtero dependencies
 local template = require "obtero.template"
 
-return function(_, data)
+return function(config, data)
   local client = obsidian.get_client()
 
   if not client:templates_dir() then
@@ -26,10 +26,10 @@ return function(_, data)
     note = client:create_note { title = data.args, json = data.args, entry = data.args, no_write = true }
   else
     local title = util.input("Enter title or path (optional): ", { completion = "file" })
-    local json = util.input("Enter path to the json to populate: ", { completion = "file" })
+    -- local json = util.input("Enter path to the json to populate: ", { completion = "file" })
     --FIXME: completion should be custom list like this
     -- local entry = util.input("Enter entry: ", { completion = "customlist,v:lua.jsonkey_completion" })
-    local entry = util.input("Enter entry: ")
+    -- local entry = util.input("Enter entry: ")
     if not title then
       log.warn "Aborted"
       return
