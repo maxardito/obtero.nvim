@@ -9,7 +9,6 @@ local config = {}
 
 ---@class PickerConfig
 ---@field note_mappings PickerNoteMappings
-
 config.picker = {}
 
 config.picker.default = function()
@@ -25,29 +24,27 @@ end
 --- Main plugin options
 ---@alias BibliographicStyle '"Chicago"'|'"IEEE"'|'"APA"'|'"MLA"'|'"BibTex"'
 
----@class OptsConfig
----@field zotero_path string
+---@class ZoteroConfig
+---@field path string
 ---@field note_path string
----@field bib_style BibliographicStyle
+---@field bibstyle BibliographicStyle
+config.zotero = {}
 
-config.opts = {}
-
-config.opts.default = function()
+config.zotero.default = function()
   return {
-    zotero_path = "~",
+    path = "~",
     note_path = "./notes",
-    bib_style = "Chicago",
+    bibstyle = "Chicago",
   }
 end
 
 ---@class CompletionOpts
 ---@field picker PickerConfig
----@field opts OptsConfig
-
+---@field zotero ZoteroConfig
 config.default = function()
   return {
     picker = config.picker.default(),
-    opts = config.opts.default(),
+    zotero = config.zotero.default(),
   }
 end
 

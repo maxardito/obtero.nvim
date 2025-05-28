@@ -3,8 +3,12 @@ local M = {}
 local defaults = require("obtero.config").default
 
 local commands = {
-  ObteroPopulate = "obtero.commands.populate",
+  ObteroNewFromTemplate = "obtero.commands.new_from_template",
   ObteroDataExplorer = "obtero.commands.data_explorer",
+  ObteroInsertNote = "obtero.commands.insert_note",
+  ObteroImportNote = "obtero.commands.import_note",
+  ObteroInlineCitation = "obtero.commands.inline_citation",
+  ObteroReferenceCitation = "obtero.commands.reference_citation",
 }
 
 -- Deep merge
