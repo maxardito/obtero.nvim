@@ -1,4 +1,5 @@
 local popup = require("plenary.popup")
+local Data = require("obtero.data")
 
 local M = {}
 
@@ -9,34 +10,41 @@ local M = {}
 ---@param data table A table representing the Zotero entry
 local function _format_article_info(data)
   local lines = {}
+  local entry = Data:new(data)
 
   local function append(line) table.insert(lines, line) end
 
-  append("📄  Title: " .. data.title)
-  append("👤  Authors:")
-  for _, author in ipairs(data.author) do
-    append("    * " .. author.given .. " " .. author.family)
-  end
-  append("🆔  Citation Key: " .. data["citation-key"] or data.id or "")
+  entry:print_title(append)
+  entry:print_authors(append)
+  entry:print_id(append)
 
   append("")
   append("---")
   append("")
 
-  append("📓  Journal: " .. data["container-title"])
-  append("📚  Volume: " .. data.volume .. " | Issue: " .. data.issue .. " | Pages: " .. data.page)
-  append("🔗  DOI: " .. data.DOI)
-  append("📅  Published: " .. table.concat(data.issued["date-parts"][1], "-"))
-  append("🌐  URL: " .. data.URL)
-  append("📥  Accessed: " .. table.concat(data.accessed["date-parts"][1], "-"))
+  entry:print_type(append)
+  entry:print_series(append)
+  entry:print_publication(append)
+  entry:print_volume(append)
+  entry:print_edition(append)
+  entry:print_pages(append)
+  entry:print_isbn(append) -- ISBN method overwrites DOI one
+  entry:print_issn(append)
+  entry:print_publisher(append)
+  entry:print_location(append)
+  entry:print_language(append)
+  entry:print_editors(append)
+  entry:print_translators(append)
+  entry:print_date_edition(append)
+  entry:print_date_origin(append)
+  entry:print_date_accessed(append)
+  entry:print_url(append)
 
   append("")
   append("---")
   append("")
 
-  append("📝  Abstract:")
-  append("    " .. data.abstract:gsub("\n", " ")) -- replace newlines with spaces, indent abstract
-  append("")
+  entry:print_abstract(append)
 
   return lines
 end
