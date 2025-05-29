@@ -143,7 +143,7 @@ end
 ---@class Data
 ---@field print_title fun(self: Data, print_fn: fun(string): nil)
 function Data:print_title(print_fn)
-  if self.title ~= nil then
+  if self.title ~= ("" or nil) then
     print_fn("📄  title: " .. self.title)
   end
 end
@@ -154,8 +154,10 @@ function Data:print_authors(print_fn)
   if self.authors ~= nil then
     print_fn("👤  authors:")
     for _, author in ipairs(self.authors) do
-      print_fn("  - first_name: " .. author.given)
-      print_fn("    last_name: " .. author.family)
+      if (author.given ~= ("" or nil)) and (author.family ~= ("" or nil)) then
+        print_fn("  - first_name: " .. author.given)
+        print_fn("    last_name: " .. author.family)
+      end
     end
   end
 end
@@ -163,7 +165,7 @@ end
 ---@class Data
 ---@field print_id fun(self: Data, print_fn: fun(string): nil)
 function Data:print_id(print_fn)
-  if (self.id) ~= nil then
+  if (self.id) ~= ("" or nil) then
     print_fn("🗝️  id: " .. self.id)
   end
   return Data
@@ -172,7 +174,7 @@ end
 ---@class Data
 ---@field print_type fun(self: Data, print_fn: fun(string): nil)
 function Data:print_type(print_fn)
-  if self.type ~= nil then
+  if self.type ~= ("" or nil) then
     print_fn("🗃️  type: " .. _displayZoteroType(self.type))
   end
 end
@@ -180,7 +182,7 @@ end
 ---@class Data
 ---@field print_series fun(self: Data, print_fn: fun(string): nil)
 function Data:print_series(print_fn)
-  if self.series ~= nil then
+  if self.series ~= ("" or nil) then
     print_fn("📰  series: " .. self.series)
   end
 end
@@ -188,7 +190,7 @@ end
 ---@class Data
 ---@field print_publication fun(self: Data, print_fn: fun(string): nil)
 function Data:print_publication(print_fn)
-  if self.publication ~= nil then
+  if self.publication ~= ("" or nil) then
     print_fn("📓  publication: " .. self.publication)
   end
 end
@@ -196,7 +198,7 @@ end
 ---@class Data
 ---@field print_volume fun(self: Data, print_fn: fun(string): nil)
 function Data:print_volume(print_fn)
-  if (self.volume and self.issue and self.page) ~= nil then
+  if (self.volume and self.issue and self.page) ~= ("" or nil) then
     print_fn("📚  volume: " .. self.volume .. " | issue: " .. self.issue .. " | pages: " .. self.page)
   end
 end
@@ -204,7 +206,7 @@ end
 ---@class Data
 ---@field print_edition fun(self: Data, print_fn: fun(string): nil)
 function Data:print_edition(print_fn)
-  if self.edition ~= nil then
+  if self.edition ~= ("" or nil) then
     print_fn("🔢  edition: " .. self.edition)
   end
 end
@@ -212,7 +214,7 @@ end
 ---@class Data
 ---@field print_pages fun(self: Data, print_fn: fun(string): nil)
 function Data:print_pages(print_fn)
-  if self.num_pages ~= nil then
+  if self.num_pages ~= ("" or nil) then
     print_fn("🧻  num_pages: " .. self.num_pages)
   end
 end
@@ -220,7 +222,7 @@ end
 ---@class Data
 ---@field print_doi fun(self: Data, print_fn: fun(string): nil)
 function Data:print_doi(print_fn)
-  if self.DOI ~= nil then
+  if self.DOI ~= ("" or nil) then
     print_fn("🔗  DOI: " .. self.DOI)
   end
 end
@@ -228,7 +230,7 @@ end
 ---@class Data
 ---@field print_isbn fun(self: Data, print_fn: fun(string): nil)
 function Data:print_isbn(print_fn)
-  if self.ISBN ~= nil then
+  if self.ISBN ~= ("" or nil) then
     print_fn("🥭  ISBN: " .. self.ISBN)
   end
 end
@@ -236,7 +238,7 @@ end
 ---@class Data
 ---@field print_issn fun(self: Data, print_fn: fun(string): nil)
 function Data:print_issn(print_fn)
-  if self.ISSN ~= nil then
+  if self.ISSN ~= ("" or nil) then
     print_fn("🥝  ISSN: " .. self.ISSN)
   end
 end
@@ -244,7 +246,7 @@ end
 ---@class Data
 ---@field print_publisher fun(self: Data, print_fn: fun(string): nil)
 function Data:print_publisher(print_fn)
-  if self.publisher ~= nil then
+  if self.publisher ~= ("" or nil) then
     print_fn("🖨️  publisher: " .. self.publisher)
   end
 end
@@ -252,7 +254,7 @@ end
 ---@class Data
 ---@field print_location fun(self: Data, print_fn: fun(string): nil)
 function Data:print_location(print_fn)
-  if self.location ~= nil then
+  if self.location ~= ("" or nil) then
     print_fn("🗺️  location: " .. self.location)
   end
 end
@@ -260,7 +262,7 @@ end
 ---@class Data
 ---@field print_language fun(self: Data, print_fn: fun(string): nil)
 function Data:print_language(print_fn)
-  if self.language ~= nil then
+  if self.language ~= ("" or nil) then
     print_fn("📖  language: " .. self.language)
   end
 end
@@ -271,8 +273,10 @@ function Data:print_editors(print_fn)
   if self.editors ~= nil then
     print_fn("👓  editors:")
     for _, editor in ipairs(self.editors) do
-      print_fn("  - first_name: " .. editor.given)
-      print_fn("    last_name: " .. editor.family)
+      if (editor.given ~= ("" or nil)) and (editor.family ~= ("" or nil)) then
+        print_fn("  - first_name: " .. editor.given)
+        print_fn("    last_name: " .. editor.family)
+      end
     end
   end
 end
@@ -283,8 +287,10 @@ function Data:print_translators(print_fn)
   if self.translators ~= nil then
     print_fn(" ✍️  translators: ")
     for _, translator in ipairs(self.translators) do
-      print_fn("  - first_name: " .. translator.given)
-      print_fn("    last_name: " .. translator.family)
+      if (translator.given ~= ("" or nil)) and (translator.family ~= ("" or nil)) then
+        print_fn("  - first_name: " .. translator.given)
+        print_fn("    last_name: " .. translator.family)
+      end
     end
   end
 end
@@ -292,7 +298,7 @@ end
 ---@class Data
 ---@field print_date_edition fun(self: Data, print_fn: fun(string): nil)
 function Data:print_date_edition(print_fn)
-  if self.date_edition ~= nil then
+  if self.date_edition ~= ("" or nil) then
     print_fn("🔮  date_edition: " .. self.date_edition)
   end
 end
@@ -300,7 +306,7 @@ end
 ---@class Data
 ---@field print_date_origin fun(self: Data, print_fn: fun(string): nil)
 function Data:print_date_origin(print_fn)
-  if self.date_original ~= nil then
+  if self.date_original ~= ("" or nil) then
     print_fn("🏺  date_original: " .. self.date_original)
   end
 end
@@ -308,7 +314,7 @@ end
 ---@class Data
 ---@field print_date_accessed fun(self: Data, print_fn: fun(string): nil)
 function Data:print_date_accessed(print_fn)
-  if self.date_accessed ~= nil then
+  if self.date_accessed ~= ("" or nil) then
     print_fn("🖱️  accessed: " .. self.date_accessed)
   end
 end
@@ -316,7 +322,7 @@ end
 ---@class Data
 ---@field print_url fun(self: Data, print_fn: fun(string): nil)
 function Data:print_url(print_fn)
-  if self.URL ~= nil then
+  if self.URL ~= ("" or nil) then
     print_fn("🌐  URL: " .. self.URL)
   end
 end
@@ -324,7 +330,7 @@ end
 ---@class Data
 ---@field print_abstract fun(self: Data, print_fn: fun(string): nil)
 function Data:print_abstract(print_fn)
-  if self.abstract ~= nil then
+  if self.abstract ~= ("" or nil) then
     print_fn("🎨  abstract: " .. self.abstract:gsub("\n", " ")) -- replace newlines with spaces, indent abstract
   end
 end

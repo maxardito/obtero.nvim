@@ -1,4 +1,3 @@
--- TODO: Docs should look something like this file? Doc autogeneration?
 local M = {}
 
 ---

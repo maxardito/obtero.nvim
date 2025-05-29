@@ -1,0 +1,47 @@
+[
+  {
+    "id": "Ador44",
+    "type": "book",
+    "title": "Dialectic of Enlightenment",
+    "author": [
+      {
+        "family": "Adorno",
+        "given": "Theodor W."
+      },
+      {
+        "family": "Horkheimer",
+        "given": "Max"
+      }
+    ],
+    "editor": [],
+    "translator": [
+      {
+        "family": "Cumming",
+        "given": "John"
+      }
+    ],
+    "publisher": "Stanford University Press",
+    "publisher-place": "Stanford, CA",
+    "collection-title": "",
+    "collection-number": "",
+    "volume": "",
+    "issue": "",
+    "page": "",
+    "number-of-pages": "304",
+    "edition": "1st English edition",
+    "URL": "https://www.sup.org/books/title/?id=151",
+    "DOI": "",
+    "ISBN": "9780804712681",
+    "ISSN": "",
+    "language": "en",
+    "accessed": {
+      "date-parts": [[2025, 5, 29]]
+    },
+    "original-date": {
+      "date-parts": [[1944]]
+    },
+    "submitted": {},
+    "abstract": "Dialectic of Enlightenment is a foundational text in critical theory by Adorno and Horkheimer, analyzing the social and philosophical implications of Enlightenment rationality."
+  }
+]
+

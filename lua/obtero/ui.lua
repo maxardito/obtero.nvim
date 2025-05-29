@@ -50,7 +50,7 @@ local function _format_article_info(data)
 end
 
 ---
---- Find an entry by its ID in a list of tables.
+--- Data explorer pop up using Plenary popup
 ---
 ---@param tbl table|nil A list of tables, each with an "id" field.
 M.show_table_popup = function(tbl)
@@ -77,7 +77,7 @@ M.show_table_popup = function(tbl)
     border = true,
   })
 
-  -- Optional: Enable scrolling
+  -- Enable scrolling
   vim.api.nvim_buf_set_keymap(bufnr, "n", "q", "<cmd>close<CR>", { silent = true, noremap = true })
   vim.api.nvim_buf_set_keymap(bufnr, "n", "<Esc>", "<cmd>close<CR>", { silent = true, noremap = true })
 end
