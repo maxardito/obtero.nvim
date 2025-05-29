@@ -1,5 +1,5 @@
 local popup = require("plenary.popup")
-local Data = require("obtero.data")
+local Explorer = require("obtero.explorer")
 
 local M = {}
 
@@ -10,13 +10,13 @@ local M = {}
 ---@param data table A table representing the Zotero entry
 local function _format_article_info(data)
   local lines = {}
-  local entry = Data:new(data)
+  local entry = Explorer:new(data)
 
   local function append(line) table.insert(lines, line) end
 
   entry:print_title(append)
-  entry:print_authors(append)
   entry:print_id(append)
+  entry:print_authors(append)
 
   append("")
   append("---")
@@ -36,7 +36,7 @@ local function _format_article_info(data)
   entry:print_editors(append)
   entry:print_translators(append)
   entry:print_date_edition(append)
-  entry:print_date_origin(append)
+  entry:print_date_original(append)
   entry:print_date_accessed(append)
   entry:print_url(append)
 
@@ -53,7 +53,7 @@ end
 --- Data explorer pop up using Plenary popup
 ---
 ---@param tbl table|nil A list of tables, each with an "id" field.
-M.show_table_popup = function(tbl)
+M.show_explorer_popup = function(tbl)
   if type(tbl) ~= "table" then
     error("Expected table, got " .. type(tbl))
   end

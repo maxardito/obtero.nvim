@@ -1,4 +1,4 @@
-local Data = require('obtero.data')
+local Data = require('obtero.explorer')
 local eq = assert.are.same
 
 local function convert_contributors(contribs)
@@ -12,6 +12,7 @@ local function convert_contributors(contribs)
   return result
 end
 
+-- TODO: Add more tests for odd JSON conditions, no authors etc
 describe('Data class from JSON file', function()
   it('parses example JSON correctly', function()
     -- read the JSON file as text lines, join into string
@@ -38,8 +39,8 @@ describe('Data class from JSON file', function()
     eq("Stanford, CA", data.location)
     eq("304", data.num_pages)
     eq("1st English edition", data.edition)
-    eq("https://www.sup.org/books/title/?id=151", data.URL)
-    eq("9780804712681", data.ISBN)
+    eq("https://www.sup.org/books/title/?id=151", data.url)
+    eq("9780804712681", data.isbn)
     eq("en", data.language)
     eq("1944", data.date_original)
     eq("2025-5-29", data.date_accessed)
