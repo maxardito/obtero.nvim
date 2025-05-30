@@ -13,5 +13,5 @@ return function(config, data)
   local result = handle:read("*a")
   handle:close()
 
-  print(vim.inspect(result))
+  return result
 end

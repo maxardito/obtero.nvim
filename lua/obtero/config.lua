@@ -32,7 +32,7 @@ config.zotero = {}
 
 config.zotero.default = function()
   return {
-    path = "~",
+    path = "~/Zotero",
     note_path = "./notes",
     bibstyle = "Chicago",
   }
