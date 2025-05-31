@@ -68,6 +68,7 @@ M.show_explorer_popup = function(tbl)
   vim.bo[bufnr].modifiable = false
 
   popup.create(bufnr, {
+    -- TODO: Title should be agnotistic to entry type
     title = "📘 Article Info",
     highlight = "Normal",
     line = math.floor((vim.o.lines - height) / 2),

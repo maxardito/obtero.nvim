@@ -6,10 +6,54 @@ local obsidian = require("obsidian")
 -- Obtero dependencies
 local utils = require "obtero.utils"
 local ui = require "obtero.ui"
-local db = require "obtero.db"
+local db = require "obtero.orm.db"
+local reference = require "obtero.orm.reference"
+
+---Parses a Zotero-style flat Lua table into an Explorer object
+---@param input_table table
+---@return Explorer
+local function parse_to_explorer(input_table)
+  local explorer = {}
+
+  -- map Zotero-style keys to Explorer fields
+  local field_map = {
+    title = "title",
+    abstractNote = "abstract",
+    date = "date_original",
+    accessDate = "date_accessed",
+    url = "url",
+    volume = "volume",
+    pages = "page",
+    publicationTitle = "publication",
+    DOI = "doi",
+    issue = "issue",
+    ISBN = "isbn",
+    ISSN = "issn",
+    publisher = "publisher",
+    language = "language",
+    place = "location",
+    edition = "edition",
+    numPages = "num_pages",
+    series = "series",
+    type = "type",
+    libraryCatalog = "id"
+  }
+
+  for _, entry in ipairs(input_table) do
+    local key = entry[1]
+    local value = entry[3]
+    local mapped_key = field_map[key]
+    if mapped_key then
+      explorer[mapped_key] = value
+    end
+  end
+
+  return explorer
+end
 
 -- TODO: Refactor to keys.lua and make more search types
 -- Factory to create a completion function with access to the dynamic zotero path
+-- TODO: This should use the database citation keys and not the json
 local function make_jsonkey_completion(zotero_path)
   return function(arg_lead)
     local json = vim.fn.readfile(zotero_path)
@@ -63,57 +107,31 @@ return function(config, data)
   end
 
   -- Load Zotero JSON and find the entry
-  local file = io.open(config.zotero.path .. "/zotero.json", "r")
-  if not file then
-    error("Could not open file: " .. config.zotero.path .. "/zotero.json")
-  end
+  -- local file = io.open(config.zotero.path .. "/zotero.json", "r")
+  -- if not file then
+  --   error("Could not open file: " .. config.zotero.path .. "/zotero.json")
+  -- end
+  --
+  -- -- local zotero_json = file:read("*a")
+  -- file:close()
 
-  local zotero_json = file:read("*a")
-  file:close()
+  -- local zotero_tbl = utils.json_to_table(zotero_json)
+  -- local entry = utils.find_by_id(zotero_tbl, key)
+  --
+  local ref = reference.new(
+    config.zotero.path,
+    db.new(config.zotero.path .. "/zotero.sqlite")
+  )
 
-  local zotero_tbl = utils.json_to_table(zotero_json)
-  local entry = utils.find_by_id(zotero_tbl, key)
-  if entry ~= nil then
-    local fields_query = [[
-    ATTACH DATABASE ']] .. config.zotero.path .. [[/better-bibtex.sqlite' AS bbt;
-    SELECT
-      f.fieldName,
-      idv.value
-    FROM bbt.citationkey
-    JOIN items i ON i.itemID = bbt.citationkey.itemID
-    JOIN itemData id ON id.itemID = i.itemID
-    JOIN itemDataValues idv ON idv.valueID = id.valueID
-    JOIN fields f ON f.fieldID = id.fieldID
-    WHERE bbt.citationkey.citationKey = ']] .. entry.id .. [[';
-    ]]
+  local fields = ref:get_fields(key)
+  -- local tags = zotero_orm:get_tags(key)
+  -- local collection = zotero_orm:get_collection(key)
 
-    local collections_query = [[
-    ATTACH DATABASE ']] .. config.zotero.path .. [[/better-bibtex.sqlite' AS bbt;
-    SELECT c.collectionName
-    FROM bbt.citationkey
-    JOIN collectionItems ci ON ci.itemID = bbt.citationkey.itemID
-    JOIN collections c ON c.collectionID = ci.collectionID
-    WHERE bbt.citationkey.citationKey = ']] .. entry.id .. [[';
-    ]]
+  -- print("Fields:")
+  -- explorer = new Explorer()
+  -- ui.show_explorer_popup(explorer)
+  local explorer_data = parse_to_explorer(fields)
+  print(vim.inspect(explorer_data))
 
-    local tags_query = [[
-    ATTACH DATABASE ']] .. config.zotero.path .. [[/better-bibtex.sqlite' AS bbt;
-    SELECT t.name AS tag
-    FROM bbt.citationkey
-    JOIN itemTags it ON it.itemID = bbt.citationkey.itemID
-    JOIN tags t ON t.tagID = it.tagID
-    WHERE bbt.citationkey.citationKey = ']] .. entry.id .. [[';
-    ]]
-
-    local tags = db.query(
-      collections_query,
-      config.zotero.path .. "/zotero.sqlite"
-    )
-
-    -- TODO: Explorer structure should be created and populated here
-    print(tags)
-  end
-
-
-  ui.show_explorer_popup(entry)
+  ui.show_explorer_popup(parse_to_explorer((fields)))
 end
