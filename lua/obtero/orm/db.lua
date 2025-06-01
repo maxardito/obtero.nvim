@@ -1,30 +1,36 @@
--- db.lua
+--- A simple SQLite query wrapper using io.popen
 
--- TODO: Make the headers reference the types
--- A simple SQLite query wrapper using io.popen
--- Encapsulated as a Lua class with configurable database path
+--- @class DB
+--- @field db_path string Path to the SQLite database
+--- @field query fun(self: DB, query: string): table
+
 local DB = {}
-
 DB.__index = DB
 
--- Constructor
--- @param db_path string: Path to the SQLite database
-function DB.new(db_path)
+--- Constructor for the DB class
+--- @param zotero_db_path string Path to the Zotero SQLite database
+--- @param bibtex_db_path string Path to the Better Bibtex SQLite database
+--- @return DB
+function DB.new(zotero_db_path, bibtex_db_path)
   local self = setmetatable({}, DB)
-  self.db_path = db_path
+  self.zotero_db_path = zotero_db_path
+  self.bibtex_db_path = bibtex_db_path
   return self
 end
 
--- Executes a SQL query against the configured database
--- @param query string: The SQL query to execute
--- @return table: A table of rows, each row is a table of fields
+--- Executes a SQL query against the configured database
+--- @param query string SQL query string to execute
+--- @return string[][] Table of rows, each row is a table of fields
 function DB:query(query)
   -- Escape double quotes in the query
   query = query:gsub('"', '\\"')
 
-  local cmd = [[sqlite3 -separator "|" "]] .. self.db_path .. [[" "]] .. query .. [["]]
+  local cmd = [[sqlite3 -separator "|" "]] .. self.zotero_db_path .. [[" "]] .. query .. [["]]
   local handle = io.popen(cmd)
-  if not handle then return end
+  -- TODO: Handle like an error
+  if not handle then
+    return { "" }
+  end
 
   local result = handle:read("*a")
   handle:close()

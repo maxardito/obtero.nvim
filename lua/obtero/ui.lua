@@ -1,5 +1,4 @@
 local popup = require("plenary.popup")
-local Explorer = require("obtero.explorer")
 
 local M = {}
 
@@ -7,18 +6,18 @@ local M = {}
 --- Turns a table with metadata belonging to a Zotero entry
 --- into a UI displayed using a plenary.nvim popup
 ---
----@param data table A table representing the Zotero entry
-local function _format_article_info(data)
+---@param entry Explorer A table representing the Zotero entry
+local function _format_article_info(entry)
   local lines = {}
-  local entry = Explorer:new(data)
 
   local function append(line) table.insert(lines, line) end
 
   entry:print_title(append)
   entry:print_id(append)
   entry:print_authors(append)
+  entry:print_editors(append)
+  entry:print_translators(append)
 
-  append("")
   append("---")
   append("")
 
@@ -30,15 +29,20 @@ local function _format_article_info(data)
   entry:print_pages(append)
   entry:print_isbn(append) -- ISBN method overwrites DOI one
   entry:print_issn(append)
+  entry:print_doi(append)
   entry:print_publisher(append)
   entry:print_location(append)
   entry:print_language(append)
-  entry:print_editors(append)
-  entry:print_translators(append)
-  entry:print_date_edition(append)
-  entry:print_date_original(append)
+  entry:print_date_published(append)
   entry:print_date_accessed(append)
   entry:print_url(append)
+
+  append("")
+  append("---")
+  append("")
+
+  entry:print_collections(append)
+  entry:print_tags(append)
 
   append("")
   append("---")
@@ -52,12 +56,8 @@ end
 ---
 --- Data explorer pop up using Plenary popup
 ---
----@param tbl table|nil A list of tables, each with an "id" field.
+---@param tbl table A list of tables, each with an "id" field.
 M.show_explorer_popup = function(tbl)
-  if type(tbl) ~= "table" then
-    error("Expected table, got " .. type(tbl))
-  end
-
   local lines = _format_article_info(tbl)
   local width = math.floor(vim.o.columns * 0.8)
   local height = math.floor(vim.o.lines * 0.8)

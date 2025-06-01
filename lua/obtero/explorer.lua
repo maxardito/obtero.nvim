@@ -1,3 +1,5 @@
+local utils = require 'obtero.utils'
+
 ---@class Contributor
 ---@field first_name string
 ---@field last_name string
@@ -22,69 +24,15 @@
 ---@field language string|nil
 ---@field editors Contributor[]|nil
 ---@field translators Contributor[]|nil
----@field date_original string|nil
----@field date_edition string|nil
+---@field date_published string|nil
 ---@field date_accessed string|nil
 ---@field url string|nil
+---@field collections string|nil
+---@field tags string|nil
 ---@field abstract string|nil
 
 local Explorer = {}
 Explorer.__index = Explorer
-
----Create a new Explorer object. Input expected to be CSL JSON
----@param o table|nil
----@return Explorer
-function Explorer:new(o)
-  local instance = setmetatable({}, self)
-  o = o or {}
-  setmetatable(o, self)
-
-  instance.title       = o.title or nil
-  instance.authors     = o.author or nil
-  instance.id          = o.id or nil
-  instance.type        = o.type or nil
-  instance.series      = o["collection-title"] or nil
-  instance.publication = o["container-title"] or nil
-  instance.volume      = o.volume or nil
-  instance.issue       = o.issue or nil
-  instance.page        = o.page or nil
-  instance.edition     = o.edition or nil
-  instance.num_pages   = o["number-of-pages"] or nil
-  instance.doi         = o.DOI or nil
-  instance.isbn        = o.ISBN or nil
-  instance.issn        = o.ISSN or nil
-  instance.publisher   = o.publisher or nil
-  instance.location    = o["publisher-place"] or nil
-  instance.language    = o.language or nil
-  instance.editors     = o.editor or nil
-  instance.translators = o.translator or nil
-
-  if o["original-date"]
-      and o["original-date"]["date-parts"] and o["original-date"]["date-parts"][1] then
-    instance.date_original = table.concat(o["original-date"]["date-parts"][1], "-")
-  else
-    instance.date_original = nil
-  end
-
-  -- Safely extract date_edition
-  if o.issued and o.issued["date-parts"] and o.issued["date-parts"][1] then
-    instance.date_edition = table.concat(o.issued["date-parts"][1], "-")
-  else
-    instance.date_edition = nil
-  end
-
-  -- Safely extract date_accessed
-  if o.accessed and o.accessed["date-parts"] and o.accessed["date-parts"][1] then
-    instance.date_accessed = table.concat(o.accessed["date-parts"][1], "-")
-  else
-    instance.date_accessed = nil
-  end
-
-  instance.url      = o.URL or nil
-  instance.abstract = o.abstract or nil
-
-  return instance
-end
 
 -- Prettier Zotero entry types
 local ZoteroDocumentTypes = {
@@ -128,7 +76,7 @@ local ZoteroDocumentTypes = {
 ---
 ---@param zoteroType string
 ---@return string
-local function _displayZoteroType(zoteroType)
+local function _display_zotero_type(zoteroType)
   local formattedType = ZoteroDocumentTypes[zoteroType]
   local displayValue
 
@@ -140,6 +88,41 @@ local function _displayZoteroType(zoteroType)
   return displayValue
 end
 
+---Create a new Explorer object. Input expected to be CSL JSON
+---@param fields table[]|nil
+---@param tags table[]|nil
+---@param collections table[]|nil
+---@return Explorer
+function Explorer:new(fields, tags, collections)
+  if type(fields) ~= "table" then
+    error("Expected table, got " .. type(fields))
+  end
+  if type(tags) ~= "table" then
+    error("Expected table, got " .. type(tags))
+  end
+  if type(collections) ~= "table" then
+    error("Expected table, got " .. type(collections))
+  end
+
+  fields = fields or {}
+  tags = tags or {}
+  collections = collections or {}
+
+  -- Create a new merged table
+  local explorer = {}
+  utils.copy_table(fields, explorer)
+
+  -- Copy tags and collections to explorer
+  explorer.tags = utils.copy_array(tags)
+  explorer.collections = utils.copy_array(collections)
+
+  -- Copy the metatable from the fields table (assuming both share the same one)
+  setmetatable(explorer, getmetatable(fields))
+  setmetatable(explorer, getmetatable(collections))
+  setmetatable(explorer, self)
+
+  return explorer
+end
 
 ---@class Explorer
 ---@field print_title fun(self: Explorer, print_fn: fun(string): nil)
@@ -155,12 +138,13 @@ function Explorer:print_authors(print_fn)
   if self.authors ~= nil then
     print_fn("👤  authors:")
     for _, author in ipairs(self.authors) do
-      if ((author.given ~= "") and (author.given ~= nil))
-          and ((author.given ~= "") and (author.given ~= nil)) then
-        print_fn("  - first_name: " .. author.given)
-        print_fn("    last_name: " .. author.family)
+      if ((author.first_name ~= "") and (author.first_name ~= nil))
+          and ((author.last_name ~= "") and (author.last_name ~= nil)) then
+        print_fn("  - first_name: " .. author.first_name)
+        print_fn("    last_name: " .. author.last_name)
       end
     end
+    print_fn("")
   end
 end
 
@@ -177,7 +161,7 @@ end
 ---@field print_type fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_type(print_fn)
   if (self.type ~= "") and (self.type ~= nil) then
-    print_fn("🗃️  type: " .. _displayZoteroType(self.type))
+    print_fn("🗃️  type: " .. _display_zotero_type(self.type))
   end
 end
 
@@ -276,12 +260,13 @@ function Explorer:print_editors(print_fn)
   if self.editors ~= nil then
     print_fn("👓  editors:")
     for _, editor in ipairs(self.editors) do
-      if ((editor.given ~= "") and (editor.given ~= nil))
-          and ((editor.given ~= "") and (editor.given ~= nil)) then
-        print_fn("  - first_name: " .. editor.given)
-        print_fn("    last_name: " .. editor.family)
+      if ((editor.first_name ~= "") and (editor.first_name ~= nil))
+          and ((editor.last_name ~= "") and (editor.last_name ~= nil)) then
+        print_fn("  - first_name: " .. editor.first_name)
+        print_fn("    last_name: " .. editor.last_name)
       end
     end
+    print_fn("")
   end
 end
 
@@ -291,28 +276,21 @@ function Explorer:print_translators(print_fn)
   if self.translators ~= nil then
     print_fn(" ✍️  translators: ")
     for _, translator in ipairs(self.translators) do
-      if ((translator.given ~= "") and (translator.given ~= nil))
-          and ((translator.given ~= "") and (translator.given ~= nil)) then
-        print_fn("  - first_name: " .. translator.given)
-        print_fn("    last_name: " .. translator.family)
+      if ((translator.first_name ~= "") and (translator.first_name ~= nil))
+          and ((translator.last_name ~= "") and (translator.last_name ~= nil)) then
+        print_fn("  - first_name: " .. translator.first_name)
+        print_fn("    last_name: " .. translator.last_name)
       end
     end
+    print_fn("")
   end
 end
 
 ---@class Explorer
----@field print_date_edition fun(self: Explorer, print_fn: fun(string): nil)
-function Explorer:print_date_edition(print_fn)
-  if (self.date_edition ~= "") and (self.date_edition ~= nil) then
-    print_fn("🔮  date_edition: " .. self.date_edition)
-  end
-end
-
----@class Explorer
----@field print_date_original fun(self: Explorer, print_fn: fun(string): nil)
-function Explorer:print_date_original(print_fn)
-  if (self.date_original ~= "") and (self.date_original ~= nil) then
-    print_fn("🏺  date_original: " .. self.date_original)
+---@field print_date_published fun(self: Explorer, print_fn: fun(string): nil)
+function Explorer:print_date_published(print_fn)
+  if (self.date_published ~= "") and (self.date_published ~= nil) then
+    print_fn("🏺  date_published: " .. self.date_published)
   end
 end
 
@@ -329,6 +307,22 @@ end
 function Explorer:print_url(print_fn)
   if (self.url ~= "") and (self.url ~= nil) then
     print_fn("🌐  url: " .. self.url)
+  end
+end
+
+---@class Explorer
+---@field print_collections fun(self: Explorer, print_fn: fun(string): nil)
+function Explorer:print_collections(print_fn)
+  if self.collections and #self.collections > 0 then
+    print_fn("🗃️  collections: " .. table.concat(self.collections, ", "))
+  end
+end
+
+---@class Explorer
+---@field print_tags fun(self: Explorer, print_fn: fun(string): nil)
+function Explorer:print_tags(print_fn)
+  if self.tags and #self.tags > 0 then
+    print_fn("🏷️  tags: " .. table.concat(self.tags, ", "))
   end
 end
 

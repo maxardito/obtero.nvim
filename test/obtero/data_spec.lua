@@ -42,7 +42,7 @@ describe('Data class from JSON file', function()
     eq("https://www.sup.org/books/title/?id=151", data.url)
     eq("9780804712681", data.isbn)
     eq("en", data.language)
-    eq("1944", data.date_original)
+    eq("1944", data.date_published)
     eq("2025-5-29", data.date_accessed)
 
     -- check authors correctly converted
