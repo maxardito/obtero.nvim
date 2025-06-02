@@ -87,4 +87,18 @@ M.flatten_table = function(input_table)
   return result
 end
 
+-- Function to insert text at the current cursor position
+---@param text string
+M.insert_text = function(text)
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0)) -- get current cursor position (1-indexed)
+  local current_line = vim.api.nvim_get_current_line()
+
+  -- Insert text at cursor column (Lua strings are 1-indexed)
+  local new_line = current_line:sub(1, col) .. text .. current_line:sub(col + 1)
+  vim.api.nvim_set_current_line(new_line)
+
+  -- Move cursor to after inserted text (optional)
+  vim.api.nvim_win_set_cursor(0, { row, col + #text })
+end
+
 return M

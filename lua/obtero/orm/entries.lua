@@ -33,6 +33,11 @@ local field_map = {
   libraryCatalog = "id"
 }
 
+local inline_ref_map = {
+  filePath = "file_path",
+  url = "url"
+}
+
 --- Constructor for the Entries class
 --- @param db DB An instance of the DB class (SQLite wrapper)
 --- @return Entries
@@ -140,6 +145,61 @@ function Entries:get_tags(citation_key)
 
   local tags = utils.flatten_table(self.db:query(query))
   return tags
+end
+
+--- Get either a local PDF file or a URL to a given entry
+--- TODO: Setting for always URL or PDF / URL backup
+--- @param citation_key string
+--- @return string[] A list of tag names
+function Entries:get_reference_link(citation_key)
+  local query = [[
+    ATTACH DATABASE ']] .. self.db.bibtex_db_path .. [[' AS bbt;
+    -- Get the PDF if available
+    SELECT key, value FROM (
+      -- Try to get a PDF attachment
+      SELECT 'filePath' AS key,
+            'storage/' || attach.key || '/' || REPLACE(ia.path, 'storage:', '') AS value,
+            1 AS sort_order
+      FROM bbt.citationkey
+      JOIN items i ON i.itemID = bbt.citationkey.itemID
+      JOIN itemAttachments ia ON ia.parentItemID = i.itemID
+      JOIN items attach ON attach.itemID = ia.itemID
+      WHERE ia.linkMode = 1
+        AND ia.path LIKE '%.pdf'
+        AND bbt.citationkey.citationKey = ']] .. citation_key .. [['
+
+      UNION ALL
+
+      -- Get the URL if available
+      SELECT 'url' AS key, idv.value AS value, 2 AS sort_order
+      FROM bbt.citationkey
+      JOIN items i ON i.itemID = bbt.citationkey.itemID
+      JOIN itemData id ON id.itemID = i.itemID
+      JOIN itemDataValues idv ON idv.valueID = id.valueID
+      JOIN fields f ON f.fieldID = id.fieldID
+      WHERE f.fieldName = 'url'
+        AND bbt.citationkey.citationKey = ']] .. citation_key .. [['
+    )
+    ORDER BY sort_order
+  ]]
+
+  -- REFACTOR: This can be a funciton in utils that maps according to a field_map
+  local results = self.db:query(query)
+  local reference_link = {}
+
+  -- Parse values into clean table
+  for _, entry in ipairs(results) do
+    local key = entry[1]
+    local value = entry[3]
+    local mapped_key = inline_ref_map[key]
+
+    -- Parse contributors following "first_name last_name" format
+    if mapped_key then
+      reference_link[mapped_key] = value
+    end
+  end
+
+  return reference_link
 end
 
 -- TODO: Move to keys
