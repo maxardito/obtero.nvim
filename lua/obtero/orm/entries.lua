@@ -147,6 +147,22 @@ function Entries:get_tags(citation_key)
   return tags
 end
 
+--- Get notes for a given citation key
+--- @param citation_key string
+--- @return string[] A list of tag names
+function Entries:get_notes(citation_key)
+  local query = [[
+    ATTACH DATABASE ']] .. self.db.bibtex_db_path .. [[' AS bbt;
+    SELECT inote.note
+    FROM bbt.citationkey
+    JOIN itemNotes inote ON inote.parentItemID = bbt.citationkey.itemID
+    WHERE bbt.citationkey.citationKey = ']] .. citation_key .. [[';
+  ]];
+
+  local notes = utils.flatten_table(self.db:query(query))
+  return notes
+end
+
 --- Get either a local PDF file or a URL to a given entry
 --- TODO: Setting for always URL or PDF / URL backup
 --- @param citation_key string
