@@ -51,13 +51,7 @@ return function(config, data)
     end
   end
 
-  local tags = reference:get_tags(key)
-  local output = {}
+  local tags = utils.tags_to_string(reference:get_tags(key))
 
-  -- Add octothorpes
-  for _, tag in ipairs(tags) do
-    table.insert(output, "#" .. tag)
-  end
-
-  utils.insert_text(table.concat(output, " "))
+  utils.insert_text(tags)
 end

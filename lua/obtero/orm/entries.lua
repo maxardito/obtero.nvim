@@ -103,7 +103,7 @@ function Entries:get_fields(citation_key)
     if mapped_key then
       if mapped_key == "authors" or mapped_key == "editors" or mapped_key == "translators" then
         fields[mapped_key] = fields[mapped_key] or {}
-        table.insert(fields[mapped_key], utils.parse_contributor(value))
+        table.insert(fields[mapped_key], utils.string_to_contributors(value))
       else
         fields[mapped_key] = value
       end

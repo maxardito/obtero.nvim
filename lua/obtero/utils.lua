@@ -15,12 +15,38 @@ M.find_by_id = function(entries, target_id)
   return nil
 end
 
+---Formats a list of contributors into a single string: "First Last, First Last, ... and First Last"
+---@param contributors Contributor[]
+---@return string
+M.contributors_to_string = function(contributors)
+  local names = {}
+  for _, c in ipairs(contributors) do
+    if c.first_name ~= "" then
+      table.insert(names, c.first_name .. " " .. c.last_name)
+    else
+      -- fallback for single-name contributors like "CCRU"
+      table.insert(names, c.last_name)
+    end
+  end
+
+  local count = #names
+  if count == 0 then
+    return ""
+  elseif count == 1 then
+    return names[1]
+  elseif count == 2 then
+    return names[1] .. " and " .. names[2]
+  else
+    return table.concat(names, ", ", 1, count - 1) .. ", and " .. names[count]
+  end
+end
+
 --
 -- Helper to split "Last, First" into { first_name = ..., last_name = ... }
 --
 ---@param name string
 ---@return Contributor
-M.parse_contributor = function(name)
+M.string_to_contributors = function(name)
   local last, first = name:match("^(.-),%s*(.+)$")
   if first and last then
     return {
@@ -86,6 +112,25 @@ M.flatten_table = function(input_table)
   end
   return result
 end
+
+--- Converts entries in a teble to a space-separated string with commas.
+--- @param entry table: A table containing multiple entries.
+--- @return string: A space-separated string with each entry separated by ', '.
+M.list_to_string = function(entry)
+  return table.concat(entry, ", ")
+end
+
+--- Converts a list of tags in an entry to a space-separated string with octothorpes.
+--- @param entry table: A table containing a `tags` field, which is a list of tag strings.
+--- @return string: A space-separated string with each tag prefixed by '#'.
+M.tags_to_string = function(entry)
+  local tags = {}
+  for _, tag in ipairs(entry) do
+    table.insert(tags, "#" .. tag)
+  end
+  return table.concat(tags, " ")
+end
+
 
 -- Function to insert text at the current cursor position
 ---@param text string
