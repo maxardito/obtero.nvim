@@ -1,9 +1,11 @@
 -- Obsidian dependencies
-local utils = require "obsidian.util"
-local log = require "obsidian.log"
 local obsidian = require("obsidian")
-local Explorer = require("obtero.explorer")
+local utils = require "obsidian.util"
+local obt_utils = require "obtero.utils"
+local log = require "obsidian.log"
+local Explorer = require "obtero.explorer"
 local styles = require "obtero.styles"
+local completion = require "obtero.completion"
 
 -- Obtero dependencies
 local DB = require "obtero.orm.db"
@@ -27,31 +29,22 @@ return function(config, data)
     return
   end
 
-  if data.args:len() > 1 then
-    log.warn "Error: Takes one argument citation key"
+  -- TODO: More complete functions
+  local completion_func = function() return reference:get_citation_keys() end
+  local completion_name = "__obtero_completion_by_citation_keys"
+  _G[completion_name] = completion_func
+
+  -- Prompt user with autocomplete
+  key = utils.input("Enter citation key (Press <Tab> for autocomplete): ", {
+    completion = "customlist,v:lua." .. completion_name,
+  })
+
+  -- Clean up the temporary global
+  _G[completion_name] = nil
+
+  if (not key) or (key == "") then
+    log.warn "Aborted"
     return
-  elseif data.args:len() == 1 then
-    key = data.args
-  else
-    -- Create and register a temporary global completion function
-    -- TODO: More complete functions
-    local completion_func = function() return reference:get_citation_keys() end
-    local completion_name = "__obtero_completion_by_citation_keys"
-    _G[completion_name] = completion_func
-
-
-    -- Prompt user with autocomplete
-    key = utils.input("Enter citation key (Press <Tab> for autocomplete): ", {
-      completion = "customlist,v:lua." .. completion_name,
-    })
-
-    -- Clean up the temporary global
-    _G[completion_name] = nil
-
-    if (not key) or (key == "") then
-      log.warn "Aborted"
-      return
-    end
   end
 
   local fields = reference:get_fields(key)
@@ -59,7 +52,6 @@ return function(config, data)
   local collections = reference:get_collections(key)
 
   local entry = Explorer:new(fields, tags, collections)
-  local citation_link = reference:get_reference_link(key)
 
   local citation
   if (config.zotero.bibstyle == "chicago") then
@@ -75,13 +67,7 @@ return function(config, data)
     return
   end
 
-  -- TODO: URL-first mode v.s. PDF/URL mode should be a config option
-  -- NOTE: Recommend obsidian.nvim URL mode code snipit
-  if (citation_link.file_path ~= "") and (citation_link.file_path ~= nil) then
-    utils.insert_text("[" ..
-      key ..
-      "](file:" .. config.zotero.path .. "/" .. citation_link.file_path:gsub(" ", "%%20") .. ")\n" .. citation)
-  else
-    utils.insert_text("[" .. key .. "](" .. citation_link.url .. ")\n" .. citation)
-  end
+  local citation_link = obt_utils.resolve_citation_link(reference:get_reference_link(key), config)
+
+  utils.insert_text("[" .. key .. "](" .. citation_link .. ")" .. citation)
 end

@@ -15,10 +15,15 @@ M.find_by_id = function(entries, target_id)
   return nil
 end
 
----Formats a list of contributors into a single string: "First Last, First Last, ... and First Last"
----@param contributors Contributor[]
+--- Formats a list of contributors into a single string: "First Last, First Last, ... and First Last"
+--- Skips processing if contributors is nil or empty.
+---@param contributors Contributor[]|nil
 ---@return string
 M.contributors_to_string = function(contributors)
+  if type(contributors) ~= "table" or #contributors == 0 then
+    return ""
+  end
+
   local names = {}
   for _, c in ipairs(contributors) do
     if c.first_name ~= "" then
@@ -30,9 +35,7 @@ M.contributors_to_string = function(contributors)
   end
 
   local count = #names
-  if count == 0 then
-    return ""
-  elseif count == 1 then
+  if count == 1 then
     return names[1]
   elseif count == 2 then
     return names[1] .. " and " .. names[2]
@@ -60,20 +63,6 @@ M.string_to_contributors = function(name)
       last_name = name
     }
   end
-end
-
----
----Convert a JSON string to a Lua table.
----
----@param json_str string
----@return table
-M.json_to_table = function(json_str)
-  local ok, tbl = pcall(vim.fn.json_decode, json_str)
-  if not ok then
-    error("Invalid JSON string")
-  end
-
-  return tbl
 end
 
 --
@@ -131,7 +120,6 @@ M.tags_to_string = function(entry)
   return table.concat(tags, " ")
 end
 
-
 -- Function to insert text at the current cursor position
 ---@param text string
 M.insert_text = function(text)
@@ -144,6 +132,22 @@ M.insert_text = function(text)
 
   -- Move cursor to after inserted text (optional)
   vim.api.nvim_win_set_cursor(0, { row, col + #text })
+end
+
+-- TODO: URL-first mode v.s. PDF/URL mode should be a config option
+-- NOTE: Recommend obsidian.nvim URL mode code snipit
+
+--- Resolves a citation link to a local file path or URL.
+-- @param citation_link table: A table with either a `file_path` or a `url` field.
+-- @param config table: A table containing a `zotero.path` string field for the local Zotero base path.
+-- @return string: A resolved citation link, preferring the local file path if available.
+--
+M.resolve_citation_link = function(citation_link, config)
+  if citation_link.file_path and citation_link.file_path ~= "" then
+    return "file:" .. config.zotero.path .. "/" .. citation_link.file_path:gsub(" ", "%%20")
+  else
+    return citation_link.url
+  end
 end
 
 return M

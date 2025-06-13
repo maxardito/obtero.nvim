@@ -5,7 +5,6 @@ local defaults = require("obtero.config").default
 local commands = {
   ObteroDataExplorer = "obtero.commands.data_explorer",
   ObteroNewFromTemplate = "obtero.commands.new_from_template",
-  ObteroNewFromNotes = "obtero.commands.new_from_notes",
   ObteroInsertTags = "obtero.commands.insert_tags",
   ObteroInlineCitation = "obtero.commands.inline_citation",
   ObteroReferenceCitation = "obtero.commands.reference_citation",

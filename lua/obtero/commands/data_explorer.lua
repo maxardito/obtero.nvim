@@ -27,31 +27,24 @@ return function(config, data)
     return
   end
 
-  if data.args:len() > 1 then
-    log.warn "Error: Takes one argument citation key"
+  -- Create and register a temporary global completion function
+  -- TODO: More complete functions
+  local completion_func = function() return reference:get_citation_keys() end
+  local completion_name = "__obtero_completion_by_citation_keys"
+  _G[completion_name] = completion_func
+
+
+  -- Prompt user with autocomplete
+  key = util.input("Enter citation key (Press <Tab> for autocomplete): ", {
+    completion = "customlist,v:lua." .. completion_name,
+  })
+
+  -- Clean up the temporary global
+  _G[completion_name] = nil
+
+  if (not key) or (key == "") then
+    log.warn "Aborted"
     return
-  elseif data.args:len() == 1 then
-    key = data.args
-  else
-    -- Create and register a temporary global completion function
-    -- TODO: More complete functions
-    local completion_func = function() return reference:get_citation_keys() end
-    local completion_name = "__obtero_completion_by_citation_keys"
-    _G[completion_name] = completion_func
-
-
-    -- Prompt user with autocomplete
-    key = util.input("Enter citation key (Press <Tab> for autocomplete): ", {
-      completion = "customlist,v:lua." .. completion_name,
-    })
-
-    -- Clean up the temporary global
-    _G[completion_name] = nil
-
-    if (not key) or (key == "") then
-      log.warn "Aborted"
-      return
-    end
   end
 
   local fields = reference:get_fields(key)
