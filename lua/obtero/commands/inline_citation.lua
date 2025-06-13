@@ -1,51 +1,19 @@
 -- Obsidian dependencies
 local obsidian = require("obsidian")
--- NOTE: There is an obsidian utils too...
-local utils = require "obsidian.util"
-local obt_utils = require "obtero.utils"
-local log = require "obsidian.log"
-
--- Obtero dependencies
-local DB = require "obtero.orm.db"
-local Entries = require "obtero.orm.entries"
+local obs_util = require "obsidian.util"
+local obt_util = require "obtero.util"
+local completion = require "obtero.completion"
 
 -- Main entry point
-return function(config, data)
+return function(config, _)
   local client = obsidian.get_client()
-  local key
-  local picker = client:picker()
 
-  local reference = Entries.new(
-    DB.new(
-      config.zotero.path .. "/zotero.sqlite",
-      config.zotero.path .. "/better-bibtex.sqlite"
-    )
-  )
-
-  if not picker then
-    log.err "No picker configured"
-    return
+  -- Inline citation callback function
+  local function inline_citation(key, reference, _)
+    local citation_link = obt_util.resolve_citation_link(reference:get_reference_link(key), config)
+    obs_util.insert_text("[" .. key .. "](" .. citation_link .. ")")
   end
 
-  -- TODO: More complete functions, plus the current one doesn't really work
-  local completion_func = function() return reference:get_citation_keys() end
-  local completion_name = "__obtero_completion_by_citation_keys"
-  _G[completion_name] = completion_func
-
-  -- Prompt user with autocomplete
-  key = utils.input("Enter citation key (Press <Tab> for autocomplete): ", {
-    completion = "customlist,v:lua." .. completion_name,
-  })
-
-  -- Clean up the temporary global
-  _G[completion_name] = nil
-
-  if (not key) or (key == "") then
-    log.warn "Aborted"
-    return
-  end
-
-  local citation_link = obt_utils.resolve_citation_link(reference:get_reference_link(key), config)
-
-  utils.insert_text("[" .. key .. "](" .. citation_link .. ")")
+  -- Then call run_picker with the callback function
+  completion.run_picker("Select Entry to Cite", client, config, inline_citation)
 end

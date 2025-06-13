@@ -1,4 +1,4 @@
-local utils = require 'obtero.utils'
+local obt_util = require 'obtero.util'
 
 ---@class Contributor
 ---@field first_name string
@@ -110,11 +110,11 @@ function Explorer:new(fields, tags, collections)
 
   -- Create a new merged table
   local explorer = {}
-  utils.copy_table(fields, explorer)
+  obt_util.copy_table(fields, explorer)
 
   -- Copy tags and collections to explorer
-  explorer.tags = utils.copy_array(tags)
-  explorer.collections = utils.copy_array(collections)
+  explorer.tags = obt_util.copy_array(tags)
+  explorer.collections = obt_util.copy_array(collections)
 
   -- Copy the metatable from the fields table (assuming both share the same one)
   setmetatable(explorer, getmetatable(fields))

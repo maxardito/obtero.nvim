@@ -1,4 +1,4 @@
-local utils = require('obtero.utils')
+local obt_util = require('obtero.util')
 
 --- A simple ORM-like interface for querying references in Zotero + Better BibTeX SQLite databases
 --- @class Entries
@@ -103,7 +103,7 @@ function Entries:get_fields(citation_key)
     if mapped_key then
       if mapped_key == "authors" or mapped_key == "editors" or mapped_key == "translators" then
         fields[mapped_key] = fields[mapped_key] or {}
-        table.insert(fields[mapped_key], utils.string_to_contributors(value))
+        table.insert(fields[mapped_key], obt_util.string_to_contributors(value))
       else
         fields[mapped_key] = value
       end
@@ -126,7 +126,7 @@ function Entries:get_collections(citation_key)
     WHERE bbt.citationkey.citationKey = ']] .. citation_key .. [[';
   ]]
 
-  local collections = utils.flatten_table(self.db:query(query))
+  local collections = obt_util.flatten_table(self.db:query(query))
   return collections
 end
 
@@ -143,7 +143,7 @@ function Entries:get_tags(citation_key)
     WHERE bbt.citationkey.citationKey = ']] .. citation_key .. [[';
   ]]
 
-  local tags = utils.flatten_table(self.db:query(query))
+  local tags = obt_util.flatten_table(self.db:query(query))
   return tags
 end
 
@@ -211,7 +211,7 @@ function Entries:get_citation_keys()
     SELECT citationKey FROM bbt.citationkey;
   ]]
 
-  local citations = utils.flatten_table(self.db:query(query))
+  local citations = obt_util.flatten_table(self.db:query(query))
   return citations
 end
 

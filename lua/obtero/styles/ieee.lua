@@ -9,6 +9,55 @@ local function safe_format(fmt, ...)
   return string.format(fmt, ...)
 end
 
+--- Parses the publication and access dates from an entry and returns formatted strings.
+--
+--- @param entry table: A bibliographic entry containing optional `date_published` and `access_date` fields.
+--- @return string, string: A formatted publication date (e.g., "Jan. 2024") and a formatted access date (e.g., "Accessed Jan. 3, 2024"), or an empty string if missing.
+local function parse_entry_dates(entry)
+  local month_names = {
+    ["01"] = "Jan.",
+    ["02"] = "Feb.",
+    ["03"] = "Mar.",
+    ["04"] = "Apr.",
+    ["05"] = "May",
+    ["06"] = "Jun.",
+    ["07"] = "Jul.",
+    ["08"] = "Aug.",
+    ["09"] = "Sep.",
+    ["10"] = "Oct.",
+    ["11"] = "Nov.",
+    ["12"] = "Dec."
+  }
+
+  -- Parse publication date
+  local pub_date
+  if entry.date_published and entry.date_published ~= "" then
+    local pub_year_month = entry.date_published:match("%S+%s+(%S+)")
+    if pub_year_month then
+      local pub_year, pub_month = pub_year_month:match("(%d+)%-(%d+)")
+      if pub_year and pub_month then
+        pub_date = (month_names[pub_month] or "") .. " " .. pub_year
+      end
+    end
+  else
+    pub_date = ""
+  end
+
+
+  -- Parse access date
+  local access_date
+  if entry.access_date and entry.access_date ~= "" then
+    local year, month, day = entry.access_date:match("(%d+)%-(%d+)%-(%d+)")
+    if year and month and day then
+      access_date = string.format("Accessed %s %d, %s", month_names[month] or "", tonumber(day), year)
+    end
+  else
+    access_date = ""
+  end
+
+  return pub_date, access_date
+end
+
 M.ieee = function(entry)
   -- Build the author list
   local author_strs = {}
@@ -26,36 +75,6 @@ M.ieee = function(entry)
   local editor_line = #editor_strs > 0 and (table.concat(editor_strs, ", "):gsub(", ([^,]+)$", ", and %1") .. ", Eds.") or
       nil
 
-  -- Parse publication date
-  local pub_year_month = entry.date_published:match("%S+%s+(%S+)") -- grabs the second non-space chunk
-  local pub_year, pub_month = pub_year_month:match("(%d+)%-(%d+)")
-
-  local month_names = {
-    ["01"] = "Jan.",
-    ["02"] = "Feb.",
-    ["03"] = "Mar.",
-    ["04"] = "Apr.",
-    ["05"] = "May",
-    ["06"] = "Jun.",
-    ["07"] = "Jul.",
-    ["08"] = "Aug.",
-    ["09"] = "Sep.",
-    ["10"] = "Oct.",
-    ["11"] = "Nov.",
-    ["12"] = "Dec."
-  }
-  local pub_date = (month_names[pub_month] or "") .. (pub_year and " " .. pub_year or "")
-
-  -- Parse access date
-  local access_date_str = nil
-  if entry.date_accessed then
-    local y, m, d = entry.date_accessed:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
-    if y and m and d then
-      local access_month = month_names[m] or ""
-      access_date_str = string.format("[Accessed: %s %s, %s]", access_month, d, y)
-    end
-  end
-
   -- Conditional fields
   local volume = entry.volume and ("vol. " .. entry.volume) or nil
   local issue = entry.issue and ("no. " .. entry.issue) or nil
@@ -63,6 +82,8 @@ M.ieee = function(entry)
   local doi = entry.doi and ("doi: " .. entry.doi) or nil
   local url = entry.url and ("[Online]. Available: " .. "[" .. entry.url .. "](" .. entry.url .. ")") or nil
   local publication = (entry.publication and "*" .. entry.publication .. "*") or nil
+
+  local pub_date, access_date = parse_entry_dates(entry)
 
   -- Join parts with commas and filter out nils
   local parts = {
@@ -74,7 +95,7 @@ M.ieee = function(entry)
     pages,
     pub_date,
     doi,
-    string.format('%s. %s', url, access_date_str)
+    string.format('%s. %s', url, access_date)
   }
 
   -- Remove nil or empty string parts

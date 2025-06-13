@@ -1,15 +1,12 @@
 -- Obsidian dependencies
-local utils = require "obsidian.util"
-local obt_utils = require "obtero.utils"
+local obt_util = require "obtero.util"
 local log = require "obsidian.log"
-local obsidian = require("obsidian")
-local Explorer = require("obtero.explorer")
+local completion = require "obtero.completion"
+local obsidian = require "obsidian"
 
--- Obtero dependencies
-local DB = require "obtero.orm.db"
-local Entries = require "obtero.orm.entries"
+local Explorer = require "obtero.explorer"
 
-return function(config, data)
+return function(config, _)
   local client = obsidian.get_client()
 
   if not client:templates_dir() then
@@ -17,87 +14,68 @@ return function(config, data)
     return
   end
 
-  local picker = client:picker()
-  if not picker then
-    log.err "No picker configured"
-    return
+  -- Entry template callback function
+  local function select_entry_template(key, reference, picker)
+    -- Get explorer fields, tags, and collections
+    local fields = reference:get_fields(key)
+    local tags = reference:get_tags(key)
+    local collections = reference:get_collections(key)
+    local citation_link = obt_util.resolve_citation_link(reference:get_reference_link(key), config)
+    local entry = Explorer:new(fields, tags, collections)
+
+    client.opts.templates.substitutions = {
+      title = entry.title,
+      authors = obt_util.contributors_to_string(entry.authors),
+      id = entry.id,
+      -- TODO: Use _display_zotero_type for nice display
+      type = entry.type,
+      series = entry.series,
+      publication = entry.publication,
+      volume = entry.volume,
+      issue = entry.issue,
+      page = entry.page,
+      edition = entry.edition,
+      num_pages = entry.num_pages,
+      doi = entry.doi,
+      isbn = entry.isbn,
+      issn = entry.issn,
+      publisher = entry.publisher,
+      location = entry.location,
+      language = entry.language,
+      editors = obt_util.contributors_to_string(entry.editors),
+      translators = obt_util.contributors_to_string(entry.translators),
+      date_published = entry.date_published,
+      date_accessed = entry.date_accessed,
+      url = citation_link,
+      collections = obt_util.list_to_string(collections),
+      tags = obt_util.tags_to_string(tags),
+      abstract = entry.abstract,
+    }
+    -- Call a picker again to select a template
+    picker:find_templates {
+      callback = function(name)
+        -- Generate the note at the specified path
+        completion.run_prompt("🗃️ Path to new note: ", "ingestion/" .. key .. ".md", function(path)
+          -- Create the note
+          -- TODO: Option for populate with tags
+          -- local note =
+          -- client:create_note { title = path, no_write = true, tags = entry.tags}
+          local note =
+              client:create_note { title = path, no_write = true }
+
+          -- Open the note in a new buffer.
+          client:open_note(note, { sync = true })
+
+          -- Write the note
+          client:write_note_to_buffer(note, { template = name })
+
+          -- Back to NORMAL mode and go to top of note
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>gg", true, false, true), 'n', false)
+        end)
+      end,
+    }
   end
 
-  local reference = Entries.new(
-    DB.new(
-      config.zotero.path .. "/zotero.sqlite",
-      config.zotero.path .. "/better-bibtex.sqlite"
-    )
-  )
-
-  local title = utils.input("Enter title or path (optional): ", { completion = "file" })
-
-  --- Create and register a temporary global completion function
-  -- TODO: More complete functions
-  local completion_func = function() return reference:get_citation_keys() end
-  local completion_name = "__obtero_completion_by_citation_keys"
-  _G[completion_name] = completion_func
-
-  --- Prompt user with autocomplete
-  local key = utils.input("Enter citation key (Press <Tab> for autocomplete): ", {
-    completion = "customlist,v:lua." .. completion_name,
-  })
-
-  if (not key) or (key == "") then
-    log.warn "Aborted"
-    return
-  end
-
-  if not title then
-    log.warn "Aborted"
-    return
-  elseif title == "" then
-    title = nil
-  end
-
-  -- Get explorer fields, tags, and collections
-  local fields = reference:get_fields(key)
-  local tags = reference:get_tags(key)
-  local collections = reference:get_collections(key)
-  local citation_link = obt_utils.resolve_citation_link(reference:get_reference_link(key), config)
-  local entry = Explorer:new(fields, tags, collections)
-
-  client.opts.templates.substitutions = {
-    title = entry.title,
-    authors = obt_utils.contributors_to_string(entry.authors),
-    id = entry.id,
-    type = entry.type,
-    series = entry.series,
-    publication = entry.publication,
-    volume = entry.volume,
-    issue = entry.issue,
-    page = entry.page,
-    edition = entry.edition,
-    num_pages = entry.num_pages,
-    doi = entry.doi,
-    isbn = entry.isbn,
-    issn = entry.issn,
-    publisher = entry.publisher,
-    location = entry.location,
-    language = entry.language,
-    editors = obt_utils.contributors_to_string(entry.editors),
-    translators = obt_utils.contributors_to_string(entry.translators),
-    date_published = entry.date_published,
-    date_accessed = entry.date_accessed,
-    url = citation_link,
-    collections = obt_utils.list_to_string(collections),
-    tags = obt_utils.tags_to_string(tags),
-    abstract = entry.abstract,
-  }
-
-  local note = client:create_note { title = title, no_write = true }
-
-  -- Open the note in a new buffer.
-  client:open_note(note, { sync = true })
-
-  picker:find_templates {
-    callback = function(name)
-      client:write_note_to_buffer(note, { template = name })
-    end,
-  }
+  -- Then call run_picker with the callback function
+  completion.run_picker("Select Entry for Template", client, config, select_entry_template)
 end
