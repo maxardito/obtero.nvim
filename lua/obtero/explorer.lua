@@ -116,6 +116,9 @@ function Explorer:new(fields, tags, collections)
   explorer.tags = obt_util.copy_array(tags)
   explorer.collections = obt_util.copy_array(collections)
 
+  -- Use formatted entry type
+  explorer.type = _display_zotero_type(explorer.type)
+
   -- Copy the metatable from the fields table (assuming both share the same one)
   setmetatable(explorer, getmetatable(fields))
   setmetatable(explorer, getmetatable(collections))
@@ -161,7 +164,7 @@ end
 ---@field print_type fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_type(print_fn)
   if (self.type ~= "") and (self.type ~= nil) then
-    print_fn("🗃️  type: " .. _display_zotero_type(self.type))
+    print_fn("🗃️  type: " .. self.type)
   end
 end
 

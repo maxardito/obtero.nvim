@@ -51,6 +51,10 @@ return function(config, _)
       tags = obt_util.tags_to_string(tags),
       abstract = entry.abstract,
     }
+
+    -- Keep from going to insert mode and removing vim markdown formatting
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), 'n', false)
+
     -- Call a picker again to select a template
     picker:find_templates {
       callback = function(name)
@@ -69,7 +73,7 @@ return function(config, _)
           -- Write the note
           client:write_note_to_buffer(note, { template = name })
 
-          -- Back to NORMAL mode and go to top of note
+          -- Go to top of the nenw file
           vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>gg", true, false, true), 'n', false)
         end)
       end,

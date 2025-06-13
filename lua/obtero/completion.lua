@@ -36,7 +36,7 @@ M.run_picker = function(prompt, client, config, callback)
   -- REFACTOR: Untyped variables straight from the Entries class should be put through an intermediary class just for
   -- the picker
   for _, v in ipairs(keys) do
-    local fields = reference:get_fields(string(v))
+    local fields = reference:get_fields(v)
     local title = (fields and fields.title) or ""
 
     local authors = obs_util.contributors_to_string(fields.authors or {})
