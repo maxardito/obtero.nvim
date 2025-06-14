@@ -27,9 +27,9 @@ function DB:query(query)
 
   local cmd = [[sqlite3 -separator "|" "]] .. self.zotero_db_path .. [[" "]] .. query .. [["]]
   local handle = io.popen(cmd)
-  -- TODO: Handle like an error
+
   if not handle then
-    return { "" }
+    error("Invalid handle: Check that the Zotero path is correct in your config file")
   end
 
   local result = handle:read("*a")

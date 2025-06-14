@@ -134,16 +134,12 @@ M.insert_text = function(text)
   vim.api.nvim_win_set_cursor(0, { row, col + #text })
 end
 
--- TODO: URL-first mode v.s. PDF/URL mode should be a config option
--- NOTE: Recommend obsidian.nvim URL mode code snipit
-
 --- Resolves a citation link to a local file path or URL.
--- @param citation_link table: A table with either a `file_path` or a `url` field.
--- @param config table: A table containing a `zotero.path` string field for the local Zotero base path.
--- @return string: A resolved citation link, preferring the local file path if available.
---
+---@param citation_link table: A table with either a `file_path` or a `url` field.
+---@param config table: A table containing a `zotero.path` string field for the local Zotero base path.
+---@return string: A resolved citation link, preferring the local file path if available.
 M.resolve_citation_link = function(citation_link, config)
-  if citation_link.file_path and citation_link.file_path ~= "" then
+  if not config.url_redirect and (citation_link.file_path and citation_link.file_path ~= "") then
     return "file:" .. config.zotero.path .. "/" .. citation_link.file_path:gsub(" ", "%%20")
   else
     return citation_link.url

@@ -148,7 +148,6 @@ function Entries:get_tags(citation_key)
 end
 
 --- Get either a local PDF file or a URL to a given entry
---- TODO: Setting for always URL or PDF / URL backup
 --- @param citation_key string
 --- @return string[] A list of tag names
 function Entries:get_reference_link(citation_key)

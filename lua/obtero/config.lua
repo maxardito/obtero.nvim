@@ -40,10 +40,12 @@ end
 ---@class CompletionOpts
 ---@field picker PickerConfig
 ---@field zotero ZoteroConfig
+---@field url_redirect boolean
 config.default = function()
   return {
     picker = config.picker.default(),
     zotero = config.zotero.default(),
+    url_redirect = false
   }
 end
 
