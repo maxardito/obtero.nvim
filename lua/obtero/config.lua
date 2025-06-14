@@ -1,4 +1,3 @@
--- ~/labor/obtero.nvim/lua/obtero/config.lua
 local config = {}
 
 --- Picker Configuration

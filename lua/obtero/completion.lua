@@ -1,5 +1,6 @@
-local obs_util = require "obtero.util"
 local log = require "obsidian.log"
+local obs_util = require "obtero.util"
+
 local DB = require "obtero.orm.db"
 local Entries = require "obtero.orm.entries"
 

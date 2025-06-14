@@ -1,8 +1,8 @@
--- Obsidian dependencies
-local obt_util = require "obtero.util"
+local obsidian = require "obsidian"
 local log = require "obsidian.log"
 local completion = require "obtero.completion"
-local obsidian = require "obsidian"
+local styles = require "obtero.styles"
+local obt_util = require "obtero.util"
 
 local Explorer = require "obtero.explorer"
 
@@ -23,11 +23,12 @@ return function(config, _)
     local citation_link = obt_util.resolve_citation_link(reference:get_reference_link(key), config)
     local entry = Explorer:new(fields, tags, collections)
 
+    -- REFACTOR: This should definitely inherit from the explorer class to avoid bloat
     client.opts.templates.substitutions = {
       title = entry.title,
       authors = obt_util.contributors_to_string(entry.authors),
       id = entry.id,
-      -- TODO: Use _display_zotero_type for nice display
+      key = key,
       type = entry.type,
       series = entry.series,
       publication = entry.publication,
@@ -50,6 +51,7 @@ return function(config, _)
       collections = obt_util.list_to_string(collections),
       tags = obt_util.tags_to_string(tags),
       abstract = entry.abstract,
+      citation = styles.generate_citation(entry, config)
     }
 
     -- Keep from going to insert mode and removing vim markdown formatting
@@ -60,12 +62,8 @@ return function(config, _)
       callback = function(name)
         -- Generate the note at the specified path
         completion.run_prompt("🗃️ Path to new note: ", "ingestion/" .. key .. ".md", function(path)
-          -- Create the note
-          -- TODO: Option for populate with tags
-          -- local note =
-          -- client:create_note { title = path, no_write = true, tags = entry.tags}
-          local note =
-              client:create_note { title = path, no_write = true }
+          -- Create the note and populate with tags
+          local note = client:create_note { title = path, no_write = true, tags = tags }
 
           -- Open the note in a new buffer.
           client:open_note(note, { sync = true })

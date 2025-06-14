@@ -1,4 +1,4 @@
-local obt_util = require('obtero.util')
+local obt_util = require 'obtero.util'
 
 --- A simple ORM-like interface for querying references in Zotero + Better BibTeX SQLite databases
 --- @class Entries
@@ -202,7 +202,6 @@ function Entries:get_reference_link(citation_key)
   return reference_link
 end
 
--- TODO: Move to keys
 --- Get all citation keys for picker autocomplete
 --- @return table[] A table of citation keys
 function Entries:get_citation_keys()

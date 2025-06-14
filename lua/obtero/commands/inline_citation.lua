@@ -1,8 +1,7 @@
--- Obsidian dependencies
-local obsidian = require("obsidian")
+local obsidian = require "obsidian"
+local completion = require "obtero.completion"
 local obs_util = require "obsidian.util"
 local obt_util = require "obtero.util"
-local completion = require "obtero.completion"
 
 -- Main entry point
 return function(config, _)

@@ -1,4 +1,4 @@
-local popup = require("plenary.popup")
+local popup = require "plenary.popup"
 
 local M = {}
 

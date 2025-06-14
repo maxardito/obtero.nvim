@@ -1,8 +1,9 @@
 -- Obsidian dependencies
-local obsidian = require("obsidian")
-local Explorer = require("obtero.explorer")
+local obsidian = require "obsidian"
 local completion = require "obtero.completion"
 local ui = require "obtero.ui"
+
+local Explorer = require "obtero.explorer"
 
 -- Main entry point
 return function(config, _)
