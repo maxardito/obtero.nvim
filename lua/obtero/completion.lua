@@ -20,11 +20,14 @@ M.run_picker = function(prompt, client, config, callback)
     return
   end
 
+  local cache_dir = vim.fn.stdpath("cache") .. "/obtero"
+  vim.fn.mkdir(cache_dir, "p")
+
   -- Load the Zotero and BetterBibTex databases
   local reference = Entries.new(
     DB.new(
-      config.zotero.path .. "/zotero.sqlite",
-      config.zotero.path .. "/better-bibtex.sqlite"
+      cache_dir .. "/zotero.sqlite",
+      cache_dir .. "/better-bibtex.sqlite"
     )
   )
 

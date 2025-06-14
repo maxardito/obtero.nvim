@@ -26,7 +26,40 @@ end
 M.setup = function(user_config)
   local config = deep_merge(defaults(), user_config or {})
 
-  -- Copy Zotero and BBT databases to a tmp directory each time an Obsidian vault is opened
+  -- Only copy Zotero and BBT databases to Neovim cache dir if they exist
+
+  local function file_exists(path)
+    local f = io.open(path, "r")
+    if f then f:close() end
+    return f ~= nil
+  end
+
+  local zotero_source = config.zotero.path .. "/zotero.sqlite"
+  local better_bibtex_source = config.zotero.path .. "/better-bibtex.sqlite"
+
+  local cache_dir = vim.fn.stdpath("cache") .. "/obtero"
+  vim.fn.mkdir(cache_dir, "p")
+
+  local zotero_dest = cache_dir .. "/zotero.sqlite"
+  local better_bibtex_dest = cache_dir .. "/better-bibtex.sqlite"
+
+  vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+      if file_exists(zotero_source) then
+        os.execute(string.format("cp %s %s", zotero_source, zotero_dest))
+      end
+      if file_exists(better_bibtex_source) then
+        os.execute(string.format("cp %s %s", better_bibtex_source, better_bibtex_dest))
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("VimLeave", {
+    callback = function()
+      os.remove(zotero_dest)
+      os.remove(better_bibtex_dest)
+    end,
+  })
 
   -- Load commands
   for name, module_path in pairs(commands) do
