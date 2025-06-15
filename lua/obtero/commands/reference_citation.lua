@@ -19,5 +19,5 @@ return function(config, _)
   end
 
   -- Then call run_picker with the callback function
-  completion.run_picker("Select Entry to Reference", client, config, reference_citation)
+  completion.run_picker("Select Entry to Reference", client, reference_citation)
 end

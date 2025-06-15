@@ -23,7 +23,7 @@ return function(config, _)
     local citation_link = obt_util.resolve_citation_link(reference:get_reference_link(key), config)
     local entry = Explorer:new(fields, tags, collections)
 
-    -- REFACTOR: This should definitely inherit from the explorer class to avoid bloat
+
     client.opts.templates.substitutions = {
       title = entry.title,
       authors = obt_util.contributors_to_string(entry.authors),
@@ -51,7 +51,7 @@ return function(config, _)
       collections = obt_util.list_to_string(collections),
       tags = obt_util.tags_to_string(tags),
       abstract = entry.abstract,
-      citation = styles.generate_citation(entry, config)
+      citation = styles.generate_citation(entry, config) or ""
     }
 
     -- Keep from going to insert mode and removing vim markdown formatting
@@ -79,5 +79,5 @@ return function(config, _)
   end
 
   -- Then call run_picker with the callback function
-  completion.run_picker("Select Entry for Template", client, config, select_entry_template)
+  completion.run_picker("Select Entry for Template", client, select_entry_template)
 end

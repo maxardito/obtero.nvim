@@ -182,7 +182,6 @@ function Entries:get_reference_link(citation_key)
     ORDER BY sort_order
   ]]
 
-  -- REFACTOR: This can be a funciton in utils that maps according to a field_map
   local results = self.db:query(query)
   local reference_link = {}
 

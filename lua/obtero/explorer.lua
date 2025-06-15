@@ -27,10 +27,9 @@ local obt_util = require 'obtero.util'
 ---@field date_published string|nil
 ---@field date_accessed string|nil
 ---@field url string|nil
----@field collections string|nil
----@field tags string|nil
+---@field collections table[]|nil
+---@field tags table[]|nil
 ---@field abstract string|nil
-
 local Explorer = {}
 Explorer.__index = Explorer
 
@@ -88,7 +87,7 @@ local function _display_zotero_type(zoteroType)
   return displayValue
 end
 
----Create a new Explorer object. Input expected to be CSL JSON
+---Create a new Explorer object.
 ---@param fields table[]|nil
 ---@param tags table[]|nil
 ---@param collections table[]|nil
@@ -252,7 +251,7 @@ end
 ---@class Explorer
 ---@field print_language fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_language(print_fn)
-  if (self.languge ~= "") and (self.language ~= nil) then
+  if (self.language ~= "") and (self.language ~= nil) then
     print_fn("📖  language: " .. self.language)
   end
 end

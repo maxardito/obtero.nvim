@@ -12,7 +12,7 @@ M.run_prompt = function(prompt, default, callback)
   end)
 end
 
-M.run_picker = function(prompt, client, config, callback)
+M.run_picker = function(prompt, client, callback)
   local picker = client:picker()
 
   if not picker then
@@ -39,13 +39,13 @@ M.run_picker = function(prompt, client, config, callback)
 
   -- REFACTOR: Untyped variables straight from the Entries class should be put through an intermediary class just for
   -- the picker
-  for _, v in ipairs(keys) do
-    local fields = reference:get_fields(v)
+  for _, citation_key in ipairs(keys) do
+    local fields = reference:get_fields(tostring(citation_key))
     local title = (fields and fields.title) or ""
 
     local authors = obs_util.contributors_to_string(fields.authors or {})
 
-    local cmp_entry_str = v .. " - " .. authors .. ", " .. title
+    local cmp_entry_str = citation_key .. " - " .. authors .. ", " .. title
     table.insert(entries, cmp_entry_str)
   end
 

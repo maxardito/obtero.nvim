@@ -80,7 +80,7 @@ end
 -- Copy an array-like table (indexed numerically)
 --
 ---@param source table
----@return Array
+---@return table
 M.copy_array = function(source)
   local result = {}
   for i, v in ipairs(source) do

@@ -5,7 +5,7 @@ local obs_util = require "obsidian.util"
 local obt_util = require "obtero.util"
 
 -- Main entry point
-return function(config, _)
+return function(_, _)
   local client = obsidian.get_client()
 
   -- Tag insert callback function
@@ -15,5 +15,5 @@ return function(config, _)
   end
 
   -- Then call run_picker with the callback function
-  completion.run_picker("Select Entry for Tag Generation", client, config, tag_insert)
+  completion.run_picker("Select Entry for Tag Generation", client, tag_insert)
 end

@@ -6,7 +6,7 @@ local ui = require "obtero.ui"
 local Explorer = require "obtero.explorer"
 
 -- Main entry point
-return function(config, _)
+return function(_, _)
   local client = obsidian.get_client()
 
   -- Data explorer callback function
@@ -21,5 +21,5 @@ return function(config, _)
   end
 
   -- Then call run_picker with the callback function
-  completion.run_picker("Data Explorer", client, config, data_explorer)
+  completion.run_picker("Data Explorer", client, data_explorer)
 end

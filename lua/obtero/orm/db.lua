@@ -1,9 +1,10 @@
 --- A simple SQLite query wrapper using io.popen
 
 --- @class DB
+--- @field zotero_db_path string
+--- @field bibtex_db_path string
 --- @field db_path string Path to the SQLite database
 --- @field query fun(self: DB, query: string): table
-
 local DB = {}
 DB.__index = DB
 
