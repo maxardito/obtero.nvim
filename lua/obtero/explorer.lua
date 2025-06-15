@@ -1,3 +1,16 @@
+--[[
+  Obtero.nvim - Explorer
+  ----------------------
+
+  Defines the Explorer class for representing and printing
+  structured bibliographic metadata.
+
+  Responsibilities:
+    - Wrap Zotero-style metadata entries as Explorer objects
+    - Provide readable output of key bibliographic fields
+    - Support custom formatters for specific metadata types
+]]
+
 local obt_util = require 'obtero.util'
 
 ---@class Contributor
@@ -87,7 +100,9 @@ local function _display_zotero_type(zoteroType)
   return displayValue
 end
 
----Create a new Explorer object.
+---
+--- Create a new Explorer object.
+---
 ---@param fields table[]|nil
 ---@param tags table[]|nil
 ---@param collections table[]|nil
@@ -119,13 +134,14 @@ function Explorer:new(fields, tags, collections)
   explorer.type = _display_zotero_type(explorer.type)
 
   -- Copy the metatable from the fields table (assuming both share the same one)
-  setmetatable(explorer, getmetatable(fields))
-  setmetatable(explorer, getmetatable(collections))
   setmetatable(explorer, self)
 
   return explorer
 end
 
+---
+--- Print entry title
+---
 ---@class Explorer
 ---@field print_title fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_title(print_fn)
@@ -134,6 +150,9 @@ function Explorer:print_title(print_fn)
   end
 end
 
+---
+--- Print entry authors
+---
 ---@class Explorer
 ---@field print_authors fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_authors(print_fn)
@@ -150,6 +169,9 @@ function Explorer:print_authors(print_fn)
   end
 end
 
+---
+--- Print entry ID
+---
 ---@class Explorer
 ---@field print_id fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_id(print_fn)
@@ -159,6 +181,9 @@ function Explorer:print_id(print_fn)
   return Explorer
 end
 
+---
+--- Print formatted entry type
+---
 ---@class Explorer
 ---@field print_type fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_type(print_fn)
@@ -167,6 +192,9 @@ function Explorer:print_type(print_fn)
   end
 end
 
+---
+--- Print series
+---
 ---@class Explorer
 ---@field print_series fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_series(print_fn)
@@ -175,6 +203,9 @@ function Explorer:print_series(print_fn)
   end
 end
 
+---
+--- Print publication
+---
 ---@class Explorer
 ---@field print_publication fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_publication(print_fn)
@@ -183,15 +214,21 @@ function Explorer:print_publication(print_fn)
   end
 end
 
+---
+--- Print volume, issue, and page
+---
 ---@class Explorer
 ---@field print_volume fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_volume(print_fn)
-  if (self.volume and self.issue and self.page ~= "")
-      and (self.volume and self.issue and self.page ~= nil) then
+  if self.volume ~= "" and self.issue ~= "" and self.page ~= "" and
+      self.volume ~= nil and self.issue ~= nil and self.page ~= nil then
     print_fn("📚  volume: " .. self.volume .. " | issue: " .. self.issue .. " | pages: " .. self.page)
   end
 end
 
+---
+--- Print edition
+---
 ---@class Explorer
 ---@field print_edition fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_edition(print_fn)
@@ -200,6 +237,9 @@ function Explorer:print_edition(print_fn)
   end
 end
 
+---
+--- Print number of pages
+---
 ---@class Explorer
 ---@field print_pages fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_pages(print_fn)
@@ -208,6 +248,9 @@ function Explorer:print_pages(print_fn)
   end
 end
 
+---
+--- Print DOI
+---
 ---@class Explorer
 ---@field print_doi fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_doi(print_fn)
@@ -216,6 +259,9 @@ function Explorer:print_doi(print_fn)
   end
 end
 
+---
+--- Pring ISBN
+---
 ---@class Explorer
 ---@field print_isbn fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_isbn(print_fn)
@@ -224,6 +270,9 @@ function Explorer:print_isbn(print_fn)
   end
 end
 
+---
+--- Print ISSN
+---
 ---@class Explorer
 ---@field print_issn fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_issn(print_fn)
@@ -232,6 +281,9 @@ function Explorer:print_issn(print_fn)
   end
 end
 
+---
+---Print publisher
+---
 ---@class Explorer
 ---@field print_publisher fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_publisher(print_fn)
@@ -240,6 +292,9 @@ function Explorer:print_publisher(print_fn)
   end
 end
 
+---
+---Print publisher location
+---
 ---@class Explorer
 ---@field print_location fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_location(print_fn)
@@ -248,6 +303,9 @@ function Explorer:print_location(print_fn)
   end
 end
 
+---
+--- Print language
+---
 ---@class Explorer
 ---@field print_language fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_language(print_fn)
@@ -256,6 +314,9 @@ function Explorer:print_language(print_fn)
   end
 end
 
+---
+---Print editors
+---
 ---@class Explorer
 ---@field print_editors fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_editors(print_fn)
@@ -272,6 +333,9 @@ function Explorer:print_editors(print_fn)
   end
 end
 
+---
+---Print translators
+---
 ---@class Explorer
 ---@field print_translators fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_translators(print_fn)
@@ -288,6 +352,9 @@ function Explorer:print_translators(print_fn)
   end
 end
 
+---
+--- Print formatted date published
+---
 ---@class Explorer
 ---@field print_date_published fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_date_published(print_fn)
@@ -296,6 +363,9 @@ function Explorer:print_date_published(print_fn)
   end
 end
 
+---
+--- Print formatted date accessed
+---
 ---@class Explorer
 ---@field print_date_accessed fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_date_accessed(print_fn)
@@ -304,6 +374,9 @@ function Explorer:print_date_accessed(print_fn)
   end
 end
 
+---
+--- Print URL
+---
 ---@class Explorer
 ---@field print_url fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_url(print_fn)
@@ -312,6 +385,9 @@ function Explorer:print_url(print_fn)
   end
 end
 
+---
+--- Print formatted entry collections
+---
 ---@class Explorer
 ---@field print_collections fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_collections(print_fn)
@@ -320,6 +396,9 @@ function Explorer:print_collections(print_fn)
   end
 end
 
+---
+--- Print formatted tags
+---
 ---@class Explorer
 ---@field print_tags fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_tags(print_fn)
@@ -328,6 +407,9 @@ function Explorer:print_tags(print_fn)
   end
 end
 
+---
+--- Print abstract
+---
 ---@class Explorer
 ---@field print_abstract fun(self: Explorer, print_fn: fun(string): nil)
 function Explorer:print_abstract(print_fn)

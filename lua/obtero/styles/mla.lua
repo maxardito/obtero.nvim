@@ -1,5 +1,16 @@
+--[[
+  Obsidian.nvim - MLA
+  -----------------------------------
+
+  Provides functionality to format bibliographic entries into MLA citation style.
+]]
 local M = {}
 
+---
+--- Formats a bibliographic entry into an MLA-style citation string.
+---
+---@param entry table: A bibliographic entry containing fields such as `authors`, `editors`, `title`, `publication`, `volume`, `issue`, `page`, `doi`, `url`, `date_published`, and `access_date`.
+---@return string: A formatted citation string following MLA style.
 M.mla = function(entry)
   local authors = entry.authors or {}
 
@@ -44,8 +55,11 @@ M.mla = function(entry)
 
 
   -- Parse publication date
-  local pub_year, pub_month, pub_day = entry.date_published and entry.date_published:match("(%d%d%d%d)%-(%d%d)%-(%d%d)") or
-      {}
+  local pub_year, pub_month, pub_day = nil, nil, nil
+  if entry.date_published then
+    pub_year, pub_month, pub_day = entry.date_published:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
+  end
+
   local month_names = {
     ["01"] = "Jan.",
     ["02"] = "Feb.",

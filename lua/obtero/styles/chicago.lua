@@ -1,5 +1,17 @@
+--[[
+  Obsidian.nvim - Chicago
+  -----------------------------------
+
+  Provides functionality to format bibliographic entries into Chicago citation style.
+]]
+
 local M = {}
 
+---
+--- Formats a bibliographic entry into an Chicago-style citation string.
+---
+---@param entry table: A bibliographic entry containing fields such as `authors`, `editors`, `title`, `publication`, `volume`, `issue`, `page`, `doi`, `url`, `date_published`, and `access_date`.
+---@return string: A formatted citation string following Chicago style.
 M.chicago = function(entry)
   local month_names = {
     ["01"] = "January",
@@ -15,7 +27,6 @@ M.chicago = function(entry)
     ["11"] = "November",
     ["12"] = "December"
   }
-
 
   local contributors = {}
   local role = "authors"

@@ -1,18 +1,17 @@
+--[[
+  Obsidian.nvim - IEEE
+  -----------------------------------
+
+  Provides functionality to format bibliographic entries into IEEE citation style.
+]]
+
 local M = {}
 
-local function safe_format(fmt, ...)
-  for i = 1, select("#", ...) do
-    if select(i, ...) == nil then
-      return nil
-    end
-  end
-  return string.format(fmt, ...)
-end
-
+---
 --- Parses the publication and access dates from an entry and returns formatted strings.
---
---- @param entry table: A bibliographic entry containing optional `date_published` and `access_date` fields.
---- @return string, string: A formatted publication date (e.g., "Jan. 2024") and a formatted access date (e.g., "Accessed Jan. 3, 2024"), or an empty string if missing.
+---
+---@param entry table: A bibliographic entry containing optional `date_published` and `access_date` fields.
+---@return string, string: A formatted publication date (e.g., "Jan. 2024") and a formatted access date (e.g., "Accessed Jan. 3, 2024"), or an empty string if missing.
 local function parse_entry_dates(entry)
   local month_names = {
     ["01"] = "Jan.",
@@ -58,6 +57,11 @@ local function parse_entry_dates(entry)
   return pub_date, access_date
 end
 
+---
+--- Formats a bibliographic entry into an IEEE-style citation string.
+---
+---@param entry table: A bibliographic entry containing fields such as `authors`, `editors`, `title`, `publication`, `volume`, `issue`, `page`, `doi`, `url`, `date_published`, and `access_date`.
+---@return string: A formatted citation string following IEEE style.
 M.ieee = function(entry)
   -- Build the author list
   local author_strs = {}

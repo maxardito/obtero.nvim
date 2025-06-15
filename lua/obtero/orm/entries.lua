@@ -1,12 +1,31 @@
+--[[
+  Obtero.nvim - ORM
+  -----------------------------------
+
+  This module provides an ORM with specific queries for
+  retrieving bibliographic data from the Zotero and BBT
+  SQLite databases.
+
+  Responsibilities:
+    - Maps Zotero/Better BibTeX fields to Explorer-friendly keys
+    - Retrieves all relevant fields (title, authors, editors, DOI, etc.) for a citation key
+    - Fetches collection names and tags associated with a citation
+    - Extracts local PDF file paths or URLs for direct access to references
+    - Provides a list of all citation keys for autocomplete or search
+    - Handles contributor names and multi-value fields
+]]
+
+
 local obt_util = require 'obtero.util'
 
---- A simple ORM-like interface for querying references in Zotero + Better BibTeX SQLite databases
---- @class Entries
---- @field db DB An instance of the database wrapper
+---@class Entries
+---@field db DB An instance of the database wrapper
 local Entries = {}
 Entries.__index = Entries
 
--- map Zotero-style keys to Explorer fields
+---
+--- Map Zotero-style keys to Explorer fields
+---
 local field_map = {
   title = "title",
   author = "authors",
@@ -38,18 +57,22 @@ local inline_ref_map = {
   url = "url"
 }
 
+---
 --- Constructor for the Entries class
---- @param db DB An instance of the DB class (SQLite wrapper)
---- @return Entries
+---
+---@param db DB An instance of the DB class (SQLite wrapper)
+---@return Entries
 function Entries.new(db)
   local self = setmetatable({}, Entries)
   self.db = db
   return self
 end
 
+---
 --- Get all fields for a given citation key
---- @param citation_key string The citationKey from Better BibTeX
---- @return table[] A list of tables, each with {fieldName, value}
+---
+---@param citation_key string The citationKey from Better BibTeX
+---@return table[] A list of tables, each with {fieldName, value}
 function Entries:get_fields(citation_key)
   local query = [[
     ATTACH DATABASE ']] .. self.db.bibtex_db_path .. [[' AS bbt;
@@ -113,9 +136,11 @@ function Entries:get_fields(citation_key)
   return fields
 end
 
+---
 --- Get collection names for a given citation key
---- @param citation_key string
---- @return string[] A list of collection names
+---
+---@param citation_key string
+---@return string[] A list of collection names
 function Entries:get_collections(citation_key)
   local query = [[
     ATTACH DATABASE ']] .. self.db.bibtex_db_path .. [[' AS bbt;
@@ -130,9 +155,11 @@ function Entries:get_collections(citation_key)
   return collections
 end
 
+---
 --- Get tag names for a given citation key
---- @param citation_key string
---- @return string[] A list of tag names
+---
+---@param citation_key string
+---@return string[] A list of tag names
 function Entries:get_tags(citation_key)
   local query = [[
     ATTACH DATABASE ']] .. self.db.bibtex_db_path .. [[' AS bbt;
@@ -147,9 +174,11 @@ function Entries:get_tags(citation_key)
   return tags
 end
 
+---
 --- Get either a local PDF file or a URL to a given entry
---- @param citation_key string
---- @return string[] A list of tag names
+---
+---@param citation_key string
+---@return string[] A list of tag names
 function Entries:get_reference_link(citation_key)
   local query = [[
     ATTACH DATABASE ']] .. self.db.bibtex_db_path .. [[' AS bbt;
@@ -200,8 +229,10 @@ function Entries:get_reference_link(citation_key)
   return reference_link
 end
 
+---
 --- Get all citation keys for picker autocomplete
---- @return table[] A table of citation keys
+---
+---@return table[] A table of citation keys
 function Entries:get_citation_keys()
   local query = [[
     ATTACH DATABASE ']] .. self.db.bibtex_db_path .. [[' AS bbt;

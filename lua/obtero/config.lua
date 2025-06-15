@@ -1,13 +1,29 @@
+--[[
+  Obtero.nvim - Configuration
+  -----------------------------------
+
+  Provides default configuration options for the Obtero plugin.
+
+  Responsibilities:
+    - Key mappings for note-related actions
+    - Zotero integration settings
+    - Overall plugin defaults including optional URL redirection
+
+  These defaults can be overridden by user-supplied configurations.
+]]
+
 local config = {}
 
---- Picker Configuration
----@class PickerNoteMappings
+---
+--- Search Configuration
+---
+---@class SearchNoteMappings
 ---@field new_from_template string
 ---@field insert_inline_citation string
 ---@field insert_full_citation string
 
----@class PickerConfig
----@field note_mappings PickerNoteMappings
+---@class SearchConfig
+---@field note_mappings SearchNoteMappings
 config.picker = {}
 
 config.picker.default = function()
@@ -20,7 +36,9 @@ config.picker.default = function()
   }
 end
 
+---
 --- Main plugin options
+---
 ---@alias BibliographicStyle '"Chicago"'|'"IEEE"'|'"APA"'|'"MLA"'|'"BibTex"'
 
 ---@class ZoteroConfig
@@ -37,8 +55,11 @@ config.zotero.default = function()
   }
 end
 
+---
+--- Complete config schema
+---
 ---@class CompletionOpts
----@field picker PickerConfig
+---@field picker SearchConfig
 ---@field zotero ZoteroConfig
 ---@field url_redirect boolean
 config.default = function()

@@ -1,3 +1,20 @@
+--[[
+  Obtero.nvim - Utilities
+  -------------------------------
+
+  A collection of helper functions used throughout the Obtero plugin.
+
+  Provides:
+    - Table and array copying utilities
+    - Contributor and citation formatting
+    - Tag and list stringification
+    - Lookup functions for entries
+    - Vim buffer text insertion
+    - Citation link resolution
+
+  These utilities aim to keep core plugin logic clean and focused.
+]]
+
 local M = {}
 
 ---
@@ -15,8 +32,12 @@ M.find_by_id = function(entries, target_id)
   return nil
 end
 
---- Formats a list of contributors into a single string: "First Last, First Last, ... and First Last"
+---
+--- Formats a list of contributors into a single string:
+--- "First Last, First Last, ... and First Last"
+---
 --- Skips processing if contributors is nil or empty.
+---
 ---@param contributors Contributor[]|nil
 ---@return string
 M.contributors_to_string = function(contributors)
@@ -29,7 +50,7 @@ M.contributors_to_string = function(contributors)
     if c.first_name ~= "" then
       table.insert(names, c.first_name .. " " .. c.last_name)
     else
-      -- fallback for single-name contributors like "CCRU"
+      -- fallback for single-name contributors, e.g. "CCRU"
       table.insert(names, c.last_name)
     end
   end
@@ -44,9 +65,9 @@ M.contributors_to_string = function(contributors)
   end
 end
 
---
--- Helper to split "Last, First" into { first_name = ..., last_name = ... }
---
+---
+--- Helper to split "Last, First" into { first_name = ..., last_name = ... }
+---
 ---@param name string
 ---@return Contributor
 M.string_to_contributors = function(name)
@@ -65,9 +86,9 @@ M.string_to_contributors = function(name)
   end
 end
 
---
--- Copy a table to another table
---
+---
+--- Copy a table to another table
+---
 ---@param source table
 ---@param target table
 M.copy_table = function(source, target)
@@ -76,9 +97,9 @@ M.copy_table = function(source, target)
   end
 end
 
---
--- Copy an array-like table (indexed numerically)
---
+---
+--- Copy an array-like table (indexed numerically)
+---
 ---@param source table
 ---@return table
 M.copy_array = function(source)
@@ -102,14 +123,18 @@ M.flatten_table = function(input_table)
   return result
 end
 
+---
 --- Converts entries in a teble to a space-separated string with commas.
+---
 --- @param entry table: A table containing multiple entries.
 --- @return string: A space-separated string with each entry separated by ', '.
 M.list_to_string = function(entry)
   return table.concat(entry, ", ")
 end
 
+---
 --- Converts a list of tags in an entry to a space-separated string with octothorpes.
+---
 --- @param entry table: A table containing a `tags` field, which is a list of tag strings.
 --- @return string: A space-separated string with each tag prefixed by '#'.
 M.tags_to_string = function(entry)
@@ -120,7 +145,9 @@ M.tags_to_string = function(entry)
   return table.concat(tags, " ")
 end
 
--- Function to insert text at the current cursor position
+---
+--- Function to insert text at the current cursor position
+---
 ---@param text string
 M.insert_text = function(text)
   local row, col = unpack(vim.api.nvim_win_get_cursor(0)) -- get current cursor position (1-indexed)
@@ -134,7 +161,9 @@ M.insert_text = function(text)
   vim.api.nvim_win_set_cursor(0, { row, col + #text })
 end
 
+---
 --- Resolves a citation link to a local file path or URL.
+---
 ---@param citation_link table: A table with either a `file_path` or a `url` field.
 ---@param config table: A table containing a `zotero.path` string field for the local Zotero base path.
 ---@return string: A resolved citation link, preferring the local file path if available.

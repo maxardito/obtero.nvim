@@ -1,11 +1,12 @@
 local obsidian = require "obsidian"
 local log = require "obsidian.log"
-local completion = require "obtero.completion"
 local styles = require "obtero.styles"
 local obt_util = require "obtero.util"
 
+local Search = require "obtero.search"
 local Explorer = require "obtero.explorer"
 
+-- Main entry point
 return function(config, _)
   local client = obsidian.get_client()
 
@@ -61,7 +62,7 @@ return function(config, _)
     picker:find_templates {
       callback = function(name)
         -- Generate the note at the specified path
-        completion.run_prompt("🗃️ Path to new note: ", "ingestion/" .. key .. ".md", function(path)
+        Search.run_prompt("🗃️ Path to new note: ", "ingestion/" .. key .. ".md", function(path)
           -- Create the note and populate with tags
           local note = client:create_note { title = path, no_write = true, tags = tags }
 
@@ -79,5 +80,5 @@ return function(config, _)
   end
 
   -- Then call run_picker with the callback function
-  completion.run_picker("Select Entry for Template", client, select_entry_template)
+  Search.run_picker("Select Entry for Template", client, select_entry_template)
 end

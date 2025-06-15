@@ -1,8 +1,8 @@
--- Obsidian dependencies
 local obsidian = require "obsidian"
-local completion = require "obtero.completion"
 local obs_util = require "obsidian.util"
 local obt_util = require "obtero.util"
+
+local Search = require "obtero.search"
 
 -- Main entry point
 return function(_, _)
@@ -15,5 +15,5 @@ return function(_, _)
   end
 
   -- Then call run_picker with the callback function
-  completion.run_picker("Select Entry for Tag Generation", client, tag_insert)
+  Search.run_picker("Select Entry for Tag Generation", client, tag_insert)
 end

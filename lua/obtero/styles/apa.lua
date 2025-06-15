@@ -1,6 +1,17 @@
+--[[
+  Obsidian.nvim - APA
+  -----------------------------------
+
+  Provides functionality to format bibliographic entries into APA citation style.
+]]
+
 local M = {}
 
--- Helper to extract initials from first names
+---
+--- Extracts initials from a first name string.
+---
+---@param first_name string: The full first name of a person.
+---@return string: Initials of the first name, each capitalized and followed by a period.
 local function get_initials(first_name)
   local initials = {}
   for word in first_name:gmatch("[%w'-]+") do
@@ -9,7 +20,11 @@ local function get_initials(first_name)
   return table.concat(initials, " ")
 end
 
--- Format names APA-style
+---
+--- Formats a list of names in APA style.
+---
+---@param list table: List of people with `first_name` and `last_name` fields.
+---@return string: Formatted name list in APA style with last names and initials, joined with commas and an ampersand before the last name.
 local function format_name_list(list)
   local name_strs = {}
   for _, person in ipairs(list or {}) do
@@ -22,16 +37,22 @@ local function format_name_list(list)
   return table.concat(name_strs, ", ")
 end
 
--- Convert title to sentence case
+---
+--- Converts a title string to sentence case.
+---
+---@param title string: The title to convert.
+---@return string: Title converted to sentence case, with the first letter capitalized and the rest lowercase.
 local function to_sentence_case(title)
   if not title or title == "" then return "" end
-  -- lowercase entire string
   local lower_title = title:lower()
-  -- uppercase first letter
   return lower_title:sub(1, 1):upper() .. lower_title:sub(2)
 end
 
-
+---
+--- Formats a bibliographic entry into an APA-style citation string.
+---
+---@param entry table: A bibliographic entry containing fields such as `authors`, `editors`, `title`, `publication`, `volume`, `issue`, `page`, `doi`, `url`, `date_published`, and `access_date`.
+---@return string: A formatted citation string following APA style.
 M.apa = function(entry)
   local authors = format_name_list(entry.authors or {})
   local editors = format_name_list(entry.editors or {})

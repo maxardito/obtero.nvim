@@ -1,7 +1,8 @@
 local obsidian = require "obsidian"
-local completion = require "obtero.completion"
 local obs_util = require "obsidian.util"
 local obt_util = require "obtero.util"
+
+local Search = require "obtero.search"
 
 -- Main entry point
 return function(config, _)
@@ -18,5 +19,5 @@ return function(config, _)
   end
 
   -- Then call run_picker with the callback function
-  completion.run_picker("Select Entry to Cite", client, inline_citation)
+  Search.run_picker("Select Entry to Cite", client, inline_citation)
 end

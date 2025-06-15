@@ -1,8 +1,7 @@
--- Obsidian dependencies
 local obsidian = require "obsidian"
-local completion = require "obtero.completion"
 local ui = require "obtero.ui"
 
+local Search = require "obtero.search"
 local Explorer = require "obtero.explorer"
 
 -- Main entry point
@@ -21,5 +20,5 @@ return function(_, _)
   end
 
   -- Then call run_picker with the callback function
-  completion.run_picker("Data Explorer", client, data_explorer)
+  Search.run_picker("Data Explorer", client, data_explorer)
 end

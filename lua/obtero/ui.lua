@@ -1,3 +1,20 @@
+--[[
+  Obtero.nvim - UI
+  ---------------------------
+
+  Provides a UI popup used by the ObteroDataExplorer command
+  for displaying detailed metadata about Zotero entries using
+  plenary.nvim's popup interface.
+
+  Responsibilities:
+    - Formats various bibliographic fields into readable lines
+    - Displays entries with authors, editors, translators, and identifiers
+    - Shows publication details, collections, tags, and abstracts
+
+  Dependencies:
+    - plenary.nvim (for popup creation)
+]]
+
 local popup = require "plenary.popup"
 
 local M = {}
