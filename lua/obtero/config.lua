@@ -43,14 +43,12 @@ end
 
 ---@class ZoteroConfig
 ---@field path string
----@field note_path string
 ---@field bibstyle BibliographicStyle
 config.zotero = {}
 
 config.zotero.default = function()
   return {
     path = "~/Zotero",
-    note_path = "./notes",
     bibstyle = "Chicago",
   }
 end
