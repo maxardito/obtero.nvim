@@ -1,0 +1,31 @@
+{
+  "abstract": "In time series classification and regression, signals are typically mapped into some intermediate representation used for constructing models. Since the underlying task is often insensitive to time shifts, these representations are required to be time-shift invariant. We introduce the joint time-frequency scattering transform, a time-shift invariant representation that characterizes the multiscale energy distribution of a signal in time and frequency. It is computed through wavelet convolutions and modulus non-linearities and may, therefore, be implemented as a deep convolutional neural network whose filters are not learned but calculated from wavelets. We consider the progression from mel-spectrograms to time scattering and joint time-frequency scattering transforms, illustrating the relationship between increased discriminability and refinements of convolutional network architectures. The suitability of the joint time-frequency scattering transform for time-shift invariant characterization of time series is demonstrated through applications to chirp signals and audio synthesis experiments. The proposed transform also obtains state-of-the-art results on several audio classification tasks, outperforming time scattering transforms and achieving accuracies comparable to those of fully learned networks.",
+  "authors": [
+    {
+      "first_name": "Joakim",
+      "last_name": "Andén"
+    },
+    {
+      "first_name": "Vincent",
+      "last_name": "Lostanlen"
+    },
+    {
+      "first_name": "Stéphane",
+      "last_name": "Mallat"
+    }
+  ],
+  "date_accessed": "2025-06-15",
+  "date_published": "2019-05-24 05-24-2019",
+  "doi": "10.1109/TSP.2019.2918992",
+  "issn": "1053-587X",
+  "issue": "14",
+  "language": "English",
+  "page": "3704-3718",
+  "publication": "IEEE Transactions on Signal Processing",
+  "series": "IEEE Transactions on Signal Processing",
+  "title": "Joint Time-Frequency Scattering",
+  "type": "journalArticle",
+  "url": "https://ieeexplore.ieee.org/document/8721532",
+  "volume": "67"
+}
+

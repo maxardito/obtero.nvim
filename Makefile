@@ -4,7 +4,7 @@ PLENARY = ~/.local/share/nvim/lazy/plenary.nvim/
 MINIDOC = ~/.local/share/nvim/lazy/mini.doc/
 
 .PHONY : all
-all : style lint test
+all : style test
 
 .PHONY : test
 test :
@@ -13,19 +13,6 @@ test :
 		--noplugin \
 		-u test/minimal_init.vim \
 		-c "PlenaryBustedDirectory $(TEST) { minimal_init = './test/minimal_init.vim' }"
-
-.PHONY: api-docs
-api-docs :
-	MINIDOC=$(MINIDOC) nvim \
-		--headless \
-		--noplugin \
-		-u scripts/minimal_init.vim \
-		-c "luafile scripts/generate_api_docs.lua" \
-		-c "qa!"
-
-.PHONY : lint
-lint :
-	luacheck .
 
 .PHONY : style
 style :

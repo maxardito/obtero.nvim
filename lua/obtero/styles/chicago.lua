@@ -1,5 +1,5 @@
 --[[
-  Obsidian.nvim - Chicago
+  Obtero.nvim - Chicago
   -----------------------------------
 
   Provides functionality to format bibliographic entries into Chicago citation style.
@@ -10,7 +10,7 @@ local M = {}
 ---
 --- Formats a bibliographic entry into an Chicago-style citation string.
 ---
----@param entry table: A bibliographic entry containing fields such as `authors`, `editors`, `title`, `publication`, `volume`, `issue`, `page`, `doi`, `url`, `date_published`, and `access_date`.
+---@param entry table: A bibliographic entry containing fields such as `authors`, `title`, `publication`, `volume`, `issue`, `page`, `doi`, `url`, `date_published`, and `access_date`.
 ---@return string: A formatted citation string following Chicago style.
 M.chicago = function(entry)
   local month_names = {
@@ -38,41 +38,34 @@ M.chicago = function(entry)
         table.insert(contributors, author.first_name .. " " .. author.last_name)  -- Not inverted
       end
     end
-  elseif entry.editors and #entry.editors > 0 then
-    role = "editors"
-    for i, editor in ipairs(entry.editors) do
-      if i == 1 then
-        table.insert(contributors, editor.last_name .. ", " .. editor.first_name)
-      else
-        table.insert(contributors, editor.first_name .. " " .. editor.last_name)
-      end
-    end
   end
 
   local contributor_line = table.concat(contributors, ", ")
-  contributor_line = contributor_line:gsub(", ([^,]+)$", ", and %1") -- Oxford comma
-
-  if role == "editors" then
-    contributor_line = contributor_line .. (#contributors > 1 and ", eds." or ", ed.")
-  end
+  contributor_line = contributor_line:gsub(", ([^,]+)$", ", and %1") .. ". " -- Oxford comma
 
   -- Year
-  local pub_year = (entry.date_published and "(" .. entry.date_published:match("(%d%d%d%d)") .. ")") or "n.d."
+  local pub_year = (entry.date_published and (entry.date_published:match("(%d%d%d%d)") .. ". ")) or "n.d. "
 
   -- Title and publication
-  local title = (entry.title and ('"' .. entry.title .. "." .. '"')) or ""
-  local publication = (entry.publication and ("*" .. entry.publication .. "*")) or ""
+  local journal_title = (entry.title and ("\"" .. entry.title .. "." .. "\" ")) or ""
+  local book_title = (entry.title and ("*" .. entry.title .. "*. ")) or ""
+  local publication = (entry.publication and ("*" .. entry.publication .. "* ")) or ""
 
   -- Volume/issue/pages
   local volume = (entry.volume and (entry.volume .. ", ")) or nil
   local issue = entry.issue and ("no. " .. entry.issue .. " ") or nil
   local pages = entry.page and (": " .. entry.page .. ".") or ""
 
+
+  -- Publisher
+  local publisher = (entry.publisher and (entry.publisher .. ".")) or ""
+  local location = (entry.location and (entry.location .. ": ")) or nil
+
   local vol_issue_pages = nil
   if volume then
-    vol_issue_pages = volume .. (issue or "") .. pub_year .. pages
+    vol_issue_pages = volume .. (issue or "") .. pages .. " "
   elseif pages ~= "" then
-    vol_issue_pages = pages:sub(3) -- strip ": "
+    vol_issue_pages = pages:sub(3) .. " " -- strip ": "
   end
 
   -- DOI and URL
@@ -85,35 +78,34 @@ M.chicago = function(entry)
     local y, m, d = entry.date_accessed:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
     if y and m and d then
       local month = month_names[m] or ""
-      access_str = string.format("Retrieved %s %d, %s", month, tonumber(d), y)
+      local day = tonumber(d)
+      if day == 0 then
+        -- If day is 0, omit the day
+        access_str = string.format("Retrieved %s, %s", month, y)
+      else
+        -- Otherwise, print full date with day
+        access_str = string.format("Retrieved %s %d, %s", month, day, y)
+      end
     end
   end
 
   -- Combine URL + access
   local online_info = nil
   if url then
-    online_info = access_str and (access_str .. ", from " .. url) or ("Available at: " .. url)
+    online_info = access_str and (access_str .. ", from " .. url .. ".") or ("Available at: " .. url .. ".")
   elseif doi then
-    online_info = doi
+    online_info = doi .. "."
   end
 
-  -- Final citation
-  local parts = {
-    contributor_line,
-    title,
-    publication,
-    vol_issue_pages,
-    online_info
-  }
-
-  local filtered_parts = {}
-  for _, part in pairs(parts) do
-    if part and part ~= "" then
-      table.insert(filtered_parts, part)
-    end
+  -- Full citation
+  local citation
+  if entry.type == "Journal Article" then
+    citation = contributor_line .. pub_year .. journal_title .. publication .. vol_issue_pages .. online_info
+  elseif entry.type == "Book" then
+    citation = contributor_line .. pub_year .. book_title .. location .. publisher
   end
 
-  return table.concat(filtered_parts, " ") .. "."
+  return citation
 end
 
 return M

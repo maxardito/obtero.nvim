@@ -1,5 +1,5 @@
 --[[
-  Obsidian.nvim - MLA
+  Obtero.nvim - MLA
   -----------------------------------
 
   Provides functionality to format bibliographic entries into MLA citation style.
@@ -9,7 +9,7 @@ local M = {}
 ---
 --- Formats a bibliographic entry into an MLA-style citation string.
 ---
----@param entry table: A bibliographic entry containing fields such as `authors`, `editors`, `title`, `publication`, `volume`, `issue`, `page`, `doi`, `url`, `date_published`, and `access_date`.
+---@param entry table: A bibliographic entry containing fields such as `authors`, `title`, `publication`, `volume`, `issue`, `page`, `doi`, `url`, `date_published`, and `access_date`.
 ---@return string: A formatted citation string following MLA style.
 M.mla = function(entry)
   local authors = entry.authors or {}
@@ -34,25 +34,7 @@ M.mla = function(entry)
     author_line = table.concat(author_strs, ", ") .. ", and " .. format_author(authors[#authors])
   end
 
-  local editors = entry.editors or {}
-
-  local editor_line = ""
-  if #editors == 1 then
-    editor_line = "Edited by " .. editors[1].first_name .. " " .. editors[1].last_name
-  elseif #editors == 2 then
-    editor_line = "Edited by " ..
-        editors[1].first_name ..
-        " " .. editors[1].last_name .. " and " .. editors[2].first_name .. " " .. editors[2].last_name
-  elseif #editors > 2 then
-    local editor_strs = {}
-    for i = 1, #editors - 1 do
-      table.insert(editor_strs, editors[i].first_name .. " " .. editors[i].last_name)
-    end
-    editor_line = "Edited by " ..
-        table.concat(editor_strs, ", ") .. ", and " .. editors[#editors].first_name .. " " .. editors[#editors]
-        .last_name
-  end
-
+  author_line = author_line .. ". "
 
   -- Parse publication date
   local pub_year, pub_month, pub_day = nil, nil, nil
@@ -74,8 +56,22 @@ M.mla = function(entry)
     ["11"] = "Nov.",
     ["12"] = "Dec."
   }
-  local pub_date = (month_names[pub_month] or "") ..
-      (pub_day and " " .. tonumber(pub_day) or "") .. (pub_year and " " .. pub_year or "")
+
+  -- Pub date
+  local pub_date = ""
+
+  if pub_month and month_names[pub_month] then
+    pub_date = pub_date .. month_names[pub_month]
+  end
+
+  if pub_day and pub_day ~= "00" then
+    pub_date = pub_date .. " " .. tonumber(pub_day)
+  end
+
+  if pub_year then
+    pub_date = pub_date .. " " .. pub_year
+  end
+
   pub_date = pub_date:gsub("^%s+", ""):gsub("%s+$", "") -- trim
 
   -- Access date
@@ -84,41 +80,47 @@ M.mla = function(entry)
     local y, m, d = entry.date_accessed:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
     if y and m and d then
       local access_month = month_names[m] or ""
-      access_str = string.format("Accessed %d %s %s", tonumber(d), access_month, y)
+      if d == "0" then
+        access_str = string.format("Accessed %s %s", access_month, y)
+      else
+        access_str = string.format("Accessed %d %s %s", tonumber(d), access_month, y)
+      end
     end
   end
 
   -- Conditional fields
-  local title = entry.title and string.format('"%s."', entry.title) or nil
-  local publication = entry.publication and string.format("*%s*", entry.publication) or nil
-  local volume = entry.volume and ("vol. " .. entry.volume) or nil
-  local issue = entry.issue and ("no. " .. entry.issue) or nil
-  local pages = entry.page and ("pp. " .. entry.page) or nil
-  local url = entry.url and ("[" .. entry.url .. "](" .. entry.url .. ")") or nil
+  local journal_title = (entry.title and ("\"" .. entry.title .. "." .. "\" ")) or nil
+  local book_title = (entry.title and ("*" .. entry.title .. "*. ")) or nil
+  local publication = (entry.publication and ("*" .. entry.publication .. "*, ")) or nil
+  local publisher = (entry.publisher and (entry.publisher .. ", ")) or nil
+  local volume = entry.volume and ("vol. " .. entry.volume .. ", ") or nil
+  local issue = entry.issue and ("no. " .. entry.issue .. ", ") or nil
+  local pages = entry.page and ("pp. " .. entry.page .. ". ") or nil
 
-  -- Combine all parts
-  local parts = {
-    author_line,
-    title,
-    publication,
-    volume,
-    issue,
-    pages,
-    pub_date ~= "" and pub_date or nil,
-    editor_line,
-    url,
-    access_str
-  }
+  -- Pub year for journal / book
+  local journal_pub_year = pub_year and (pub_year .. ", ") or nil
+  local book_pub_year = pub_year and (pub_year .. ".") or nil
 
-  -- Remove nil or empty values
-  local filtered_parts = {}
-  for _, part in pairs(parts) do
-    if part and part ~= "" then
-      table.insert(filtered_parts, part)
-    end
+  -- DOI and URL
+  local doi = entry.doi and ("https://doi.org/" .. entry.doi) or nil
+  local url = (not doi and entry.url) and ("[" .. entry.url .. "](" .. entry.url .. ")") or nil
+
+  -- Combine URL + access
+  local online_info = nil
+  if url then
+    online_info = access_str and (access_str .. ", from " .. url .. ".") or ("Available at: " .. url .. ".")
+  elseif doi then
+    online_info = doi .. "."
   end
 
-  local citation = table.concat(filtered_parts, ". ") .. "."
+  -- Full citation
+  local citation
+  if entry.type == "Journal Article" then
+    citation = author_line .. journal_title .. publication .. volume .. issue .. journal_pub_year .. pages .. online_info
+  elseif entry.type == "Book" then
+    citation = author_line .. book_title .. publisher .. book_pub_year
+  end
+
   return citation
 end
 

@@ -39,7 +39,7 @@ end
 ---
 --- Main plugin options
 ---
----@alias BibliographicStyle '"Chicago"'|'"IEEE"'|'"APA"'|'"MLA"'|'"BibTex"'
+---@alias BibliographicStyle '"Chicago"'|'"IEEE"'|'"MLA"'|'"BibTex"'
 
 ---@class ZoteroConfig
 ---@field path string

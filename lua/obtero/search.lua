@@ -17,7 +17,7 @@
   Dependencies:
     - obsidian.log (for logging)
     - Default picker from the obsidian.nvim client
-    - Neovim's native UI bnput and scheduling APIs
+    - Neovim's native UI input and scheduling APIs
 ]]
 
 

@@ -9,7 +9,6 @@
     - IEEE
     - Chicago
     - MLA
-    - APA
 
   Responsibilities:
     - Imports individual style formatting modules
@@ -24,7 +23,6 @@ local log = require "obsidian.log"
 local ieee = require "obtero.styles.ieee"
 local chicago = require "obtero.styles.chicago"
 local mla = require "obtero.styles.mla"
-local apa = require "obtero.styles.apa"
 
 -- BUG: There are definitely some errors with punctuation and commas in the style reference generators that need to be fixed
 
@@ -32,7 +30,6 @@ local styles = {
   ieee = ieee.ieee,
   chicago = chicago.chicago,
   mla = mla.mla,
-  apa = apa.apa
 }
 
 ---
@@ -43,14 +40,12 @@ local styles = {
 local function generate_citation(entry, config)
   if config.zotero.bibstyle == "chicago" then
     return styles.chicago(entry)
-  elseif config.zotero.bibstyle == "apa" then
-    return styles.apa(entry)
   elseif config.zotero.bibstyle == "mla" then
     return styles.mla(entry)
   elseif config.zotero.bibstyle == "ieee" then
     return styles.ieee(entry)
   else
-    log.err("Error: Please set a valid bibstyle in your nvim config. Valid options: chicago, ieee, apa, mla")
+    log.err("Error: Please set a valid bibstyle in your nvim config. Valid options: ieee, mla, chicago")
     return nil
   end
 end
