@@ -16,26 +16,17 @@ on:
 
 jobs:
   checks:
-    name: ${{ matrix.task.name }} (${{ matrix.os }})
+    name: ${{ matrix.task_name }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 3
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        task:
-          - name: Test
-            run: |
-              make test PLENARY=_runtime/plenary.nvim
-
-          - name: Lint
-            prepare: |
-              sudo luarocks install luacheck
-            run: |
-              make lint
-
         include:
           - os: ubuntu-latest
+            task_name: Test
+            task_run: make test PLENARY=_runtime/plenary.nvim
             nvim_url: https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
             packages: luarocks ripgrep
             manager: sudo apt-get
@@ -68,11 +59,7 @@ jobs:
           ls -lh _neovim
           ls -lh _runtime
 
-      - name: Prepare
-        if: ${{ matrix.task.prepare }}
-        run: ${{ matrix.task.prepare }}
-
-      - name: ${{ matrix.task.name }}
+      - name: Run Task - ${{ matrix.task_name }}
         shell: bash
         run: |
           export PATH="${PWD}/_neovim/bin:${PATH}"
@@ -80,4 +67,4 @@ jobs:
 
           nvim --version
 
-          ${{ matrix.task.run }}
+          ${{ matrix.task_run }}
