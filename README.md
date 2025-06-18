@@ -6,6 +6,7 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" />
   </a>
+  <br />
   <a href="https://github.com/yourusername/obtero.nvim/releases">
     <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim?display_name=tag" />
   </a>
