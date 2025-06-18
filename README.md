@@ -1,13 +1,19 @@
-# <center> Obtero </center>
+<h1 align="center">Obtero</h1>
 
-<center>
-![Neovim](https://img.shields.io/badge/neovim-0.9+-blue?logo=neovim)
-![Zotero](https://img.shields.io/badge/zotero-supported-red?logo=zotero)
-![Lua](https://img.shields.io/badge/lua-%E2%89%A5%205.1-blue?logo=lua)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/github/v/release/yourusername/obtero.nvim?display_name=tag)](https://github.com/yourusername/obtero.nvim/releases)
-[![Builds](https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml)
-</center>
+<p align="center">
+  <img src="https://img.shields.io/badge/neovim-0.11.1+-blue?logo=neovim" />
+  <img src="https://img.shields.io/badge/zotero-supported-red?logo=zotero" />
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" />
+  </a>
+  <a href="https://github.com/yourusername/obtero.nvim/releases">
+    <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim?display_name=tag" />
+  </a>
+  <a href="https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml">
+    <img src="https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml/badge.svg" />
+  </a>
+</p>
+
 --- 
 Obtero is an extension for `obsidian.nvim` that allows you to cite papers, import notes, and populate Obsidian notes using data from your Zotero library. It's loosely modeled off of the [obsidian-zotero-integration](https://github.com/mgmeyers/obsidian-zotero-integration) plugin for the Obsidian UI.
 
@@ -67,14 +73,19 @@ By default, Zotero will store these files in your Zotero data directory (`~/Zote
 ## ⌨️ Commands
 
 #### `ObteroDataExplorer`
+Opens up a pop-up window that displays a given Zotero entry's metadata fields, loosely modeled off of the data explorer view from the [obsidian-zotero-integration](https://github.com/mgmeyers/obsidian-zotero-integration) plugin.
 
 #### `ObteroNewFromTemplate`
+Populates an Obsidian template file with fields from a selected Zotero entry. Location of template files can be defined in the `obsidian.nvim` config file.
 
 #### `ObteroInlineCitation`
+Generates an inline citation based on a Zotero entry's key. Inline citations also contain hyperlinks to either the PDF or URL of the entry, if one exists.
 
 #### `ObteroReferenceCitation`
+Generates a full bibliographic citation following a chosen style guide and inserts it into the current Obsidian note.
 
 #### `ObteroInsertTags`
+Inserts tags from a given Zotero entry into the current Obsidian note.
 
 ## 🗺️ Roadmap
 
@@ -86,4 +97,4 @@ This project is the result of a lot of procrastination while writing academic ar
 
 ## Acknowledgements
 
-This work would be nothing without
+The design choices here follow the structure of both [obsidian.nvim](https://github.com/epwalsh/obsidian.nvim) and [obsidian-zotero-integration](https://github.com/mgmeyers/obsidian-zotero-integration), so shout out to those who have contributed to those projects.
