@@ -1,21 +1,101 @@
-name: PR Test
+name: Main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 on:
   pull_request:
     branches:
+      - '*'
+  push:
+    branches:
       - main
+    tags:
+      - 'v*.*.*'
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  checks:
+    name: ${{ matrix.task.name }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 3
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        task:
+          - name: Test
+            run: |
+              make test PLENARY=_runtime/plenary.nvim
+
+          - name: Lint
+            prepare: |
+              sudo luarocks install luacheck
+            run: |
+              make lint
+
+        include:
+          - os: ubuntu-latest
+            nvim_url: https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
+            packages: luarocks ripgrep
+            manager: sudo apt-get
+
+          - os: windows-latest
+            nvim_url: https://github.com/neovim/neovim/releases/download/nightly/nvim-win64.zip
+            task:
+              name: Test
+              run: |
+                make test PLENARY=_runtime/plenary.nvim
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Lua
-        uses: xmake-io/github-action-setup-lua@v1
-        with:
-          lua-version: "5.1"
+      - name: Install packages
+        if: ${{ matrix.packages }}
+        run: ${{ matrix.manager }} install ${{ matrix.packages }}
 
-      - name: Run tests
-        run: make test
+      - name: Install neovim (nix)
+        shell: bash
+        if: matrix.os != 'windows-latest'
+        run: |
+          # Download neovim nightly.
+          mkdir -p _neovim
+          curl -sL ${{ matrix.nvim_url }} | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
+
+      - name: Install neovim (windows)
+        shell: powershell
+        if: matrix.os == 'windows-latest'
+        run: |
+          # Download neovim.
+          # winget install neovim
+          curl -o nvim-win64.zip ${{ matrix.nvim_url }}
+          Expand-Archive -F nvim-win64.zip .
+          Move-Item -Path nvim-win64 -Destination _neovim
+
+      - name: Install plugin dependencies
+        shell: bash
+        run: |
+          # Clone plenary.
+          mkdir -p _runtime
+          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim _runtime/plenary.nvim
+
+      - name: Show environment
+        shell: bash
+        run: |
+          ls -lh _neovim
+          ls -lh _runtime
+
+      - name: Prepare
+        if: ${{ matrix.task.prepare }}
+        run: ${{ matrix.task.prepare }}
+
+      - name: ${{ matrix.task.name }}
+        shell: bash
+        run: |
+          export PATH="${PWD}/_neovim/bin:${PATH}"
+          export VIM="${PWD}/_neovim/share/nvim/runtime"
+
+          nvim --version
+
+          ${{ matrix.task.run }}
