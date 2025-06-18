@@ -7,8 +7,8 @@
     <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" />
   </a>
   <br />
-  <a href="https://github.com/yourusername/obtero.nvim/releases">
-    <img src="https://img.shields.io/github/v/release/yourusername/obtero.nvim" />
+  <a href="https://github.com/maxardito/obtero.nvim/releases">
+    <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim" />
   </a>
   <a href="https://github.com/maxardito/obtero.nvim/actions/workflows/test.yml">
     <img src="https://github.com/maxardito/obtero.nvim/actions/workflows/test.yml/badge.svg" />
