@@ -1,22 +1,71 @@
-name: PR Test
+name: Main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 on:
   pull_request:
     branches:
+      - '*'
+  push:
+    branches:
       - main
+    tags:
+      - 'v*.*.*'
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  checks:
+    name: ${{ matrix.task_name }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 3
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            task_name: Test
+            task_run: make test PLENARY=_runtime/plenary.nvim
+            nvim_url: https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz
+            packages: luarocks ripgrep
+            manager: sudo apt-get
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Lua
-        uses: leafo/gh-actions-lua@v9
-        with:
-          luaVersion: "5.1"
+      - name: Install packages
+        if: ${{ matrix.packages }}
+        run: ${{ matrix.manager }} install ${{ matrix.packages }}
 
-      - name: Run tests
-        run: make test
+      - name: Install neovim (nix)
+        shell: bash
+        run: |
+          mkdir -p _neovim
+          curl -fL -o nvim.tar.gz https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz
+          file nvim.tar.gz
+          tar xzf nvim.tar.gz --strip-components=1 -C _neovim
 
+      - name: Install plugin dependencies
+        shell: bash
+        run: |
+          # Clone plenary.
+          mkdir -p _runtime
+          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim _runtime/plenary.nvim
+
+      - name: Show environment
+        shell: bash
+        run: |
+          ls -lh _neovim
+          ls -lh _runtime
+
+      - name: Run Task - ${{ matrix.task_name }}
+        shell: bash
+        run: |
+          export PATH="${PWD}/_neovim/bin:${PATH}"
+          export VIM="${PWD}/_neovim/share/nvim/runtime"
+
+          nvim --version
+
+          ${{ matrix.task_run }}
