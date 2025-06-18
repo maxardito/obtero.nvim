@@ -8,10 +8,10 @@
   </a>
   <br />
   <a href="https://github.com/yourusername/obtero.nvim/releases">
-    <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim?display_name=tag" />
+    <img src="https://img.shields.io/github/v/release/yourusername/obtero.nvim" />
   </a>
-  <a href="https://github.com/maxardito/obtero.nvim/.github/workflows/test.yml">
-    <img src="https://github.com/maxardito/obtero.nvim/.github/workflows/test.yml/badge.svg" />
+  <a href="https://github.com/maxardito/obtero.nvim/actions/workflows/test.yml">
+    <img src="https://github.com/maxardito/obtero.nvim/actions/workflows/test.yml/badge.svg" />
   </a>
 </p>
 
