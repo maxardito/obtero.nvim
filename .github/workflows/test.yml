@@ -42,9 +42,10 @@ jobs:
       - name: Install neovim (nix)
         shell: bash
         run: |
-          # Download neovim nightly.
           mkdir -p _neovim
-          curl -sL ${{ matrix.nvim_url }} | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
+          curl -fL -o nvim.tar.gz https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
+          file nvim.tar.gz
+          tar xzf nvim.tar.gz --strip-components=1 -C _neovim
 
       - name: Install plugin dependencies
         shell: bash
