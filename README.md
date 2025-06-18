@@ -9,8 +9,8 @@
   <a href="https://github.com/yourusername/obtero.nvim/releases">
     <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim?display_name=tag" />
   </a>
-  <a href="https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml">
-    <img src="https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml/badge.svg" />
+  <a href="https://github.com/maxardito/obtero.nvim/.github/workflows/test.yml">
+    <img src="https://github.com/maxardito/obtero.nvim/.github/workflows/test.yml/badge.svg" />
   </a>
 </p>
 
