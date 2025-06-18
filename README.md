@@ -1,12 +1,14 @@
-# Obtero
+# <center> Obtero </center>
 
-<!-- ![Neovim](https://img.shields.io/badge/neovim-0.9+-blue?logo=neovim) -->
-<!-- ![Zotero](https://img.shields.io/badge/zotero-supported-red?logo=zotero) -->
-<!-- ![Lua](https://img.shields.io/badge/lua-%E2%89%A5%205.1-blue?logo=lua) -->
-<!-- [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) -->
-<!-- [![Version](https://img.shields.io/github/v/release/yourusername/obtero.nvim?display_name=tag)](https://github.com/yourusername/obtero.nvim/releases) -->
-<!-- [![Builds](https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml) -->
-
+<center>
+![Neovim](https://img.shields.io/badge/neovim-0.9+-blue?logo=neovim)
+![Zotero](https://img.shields.io/badge/zotero-supported-red?logo=zotero)
+![Lua](https://img.shields.io/badge/lua-%E2%89%A5%205.1-blue?logo=lua)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Version](https://img.shields.io/github/v/release/yourusername/obtero.nvim?display_name=tag)](https://github.com/yourusername/obtero.nvim/releases)
+[![Builds](https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml)
+</center>
+--- 
 Obtero is an extension for `obsidian.nvim` that allows you to cite papers, import notes, and populate Obsidian notes using data from your Zotero library. It's loosely modeled off of the [obsidian-zotero-integration](https://github.com/mgmeyers/obsidian-zotero-integration) plugin for the Obsidian UI.
 
 ![Demo GIF](./assets/data-explorer.gif)
