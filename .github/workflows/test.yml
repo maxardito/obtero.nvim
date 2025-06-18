@@ -27,7 +27,7 @@ jobs:
           - os: ubuntu-latest
             task_name: Test
             task_run: make test PLENARY=_runtime/plenary.nvim
-            nvim_url: https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
+            nvim_url: https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz
             packages: luarocks ripgrep
             manager: sudo apt-get
 
@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p _neovim
-          curl -fL -o nvim.tar.gz https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
+          curl -fL -o nvim.tar.gz https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz
           file nvim.tar.gz
           tar xzf nvim.tar.gz --strip-components=1 -C _neovim
 
