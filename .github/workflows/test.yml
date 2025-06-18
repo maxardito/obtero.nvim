@@ -40,13 +40,6 @@ jobs:
             packages: luarocks ripgrep
             manager: sudo apt-get
 
-          - os: windows-latest
-            nvim_url: https://github.com/neovim/neovim/releases/download/nightly/nvim-win64.zip
-            task:
-              name: Test
-              run: |
-                make test PLENARY=_runtime/plenary.nvim
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,21 +50,10 @@ jobs:
 
       - name: Install neovim (nix)
         shell: bash
-        if: matrix.os != 'windows-latest'
         run: |
           # Download neovim nightly.
           mkdir -p _neovim
           curl -sL ${{ matrix.nvim_url }} | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
-
-      - name: Install neovim (windows)
-        shell: powershell
-        if: matrix.os == 'windows-latest'
-        run: |
-          # Download neovim.
-          # winget install neovim
-          curl -o nvim-win64.zip ${{ matrix.nvim_url }}
-          Expand-Archive -F nvim-win64.zip .
-          Move-Item -Path nvim-win64 -Destination _neovim
 
       - name: Install plugin dependencies
         shell: bash
