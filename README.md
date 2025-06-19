@@ -6,11 +6,12 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" />
   </a>
-  <a href="https://github.com/yourusername/obtero.nvim/releases">
-    <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim?display_name=tag" />
+  <br />
+  <a href="https://github.com/maxardito/obtero.nvim/releases">
+    <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim" alt="Latest Release">
   </a>
-  <a href="https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml">
-    <img src="https://github.com/yourusername/obtero.nvim/actions/workflows/ci.yml/badge.svg" />
+  <a href="https://github.com/maxardito/obtero.nvim/actions/workflows/test.yml">
+    <img src="https://github.com/maxardito/obtero.nvim/actions/workflows/test.yml/badge.svg" />
   </a>
 </p>
 
