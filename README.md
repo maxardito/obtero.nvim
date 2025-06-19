@@ -8,7 +8,7 @@
   </a>
   <br />
   <a href="https://github.com/maxardito/obtero.nvim/releases">
-    <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim?label=latest" />
+    <img src="https://img.shields.io/github/v/release/maxardito/obtero.nvim" alt="Latest Release">
   </a>
   <a href="https://github.com/maxardito/obtero.nvim/actions/workflows/test.yml">
     <img src="https://github.com/maxardito/obtero.nvim/actions/workflows/test.yml/badge.svg" />
