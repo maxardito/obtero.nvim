@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links: []
+
+issue_templates:
+  - name: Bug Report
+    about: Report a problem with the plugin
+    labels: [bug]
+    title: "[BUG] "
+  - name: Feature Request
+    about: Suggest an idea for this plugin
+    labels: [enhancement]
+    title: "[FEATURE] "
+  - name: Support Question
+    about: Ask for help using the plugin
+    labels: [question]
+    title: "[QUESTION] "
+
