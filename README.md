@@ -45,7 +45,7 @@ By default, Zotero will store these files in your Zotero data directory (`~/Zote
 
 ```
   {
-    "maxardito/obtero",
+    "maxardito/obtero.nvim",
     dependencies = {
       "epwalsh/obsidian.nvim",
     },
